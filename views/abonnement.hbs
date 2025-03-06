@@ -1,0 +1,549 @@
+ <!--
+ <div class="min-h-screen bg-gray-100">
+  <header class="bg-white shadow">
+    <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+      <h1 class="text-3xl font-bold text-gray-900">Abonnement SMS</h1>
+    </div>
+  </header>
+  <main>
+    <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+      <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+        <div class="p-6 bg-white border-b border-gray-200">
+          <h2 class="text-2xl font-semibold mb-4">Activez les alertes SMS</h2>
+          <p class="mb-4">Recevez des offres d'emploi personnalisées directement sur votre téléphone pour seulement 1 DT par mois.</p>
+          <form action="/subscribe-sms" method="POST">
+            <div class="mb-4">
+              <label for="phone" class="block text-gray-700 text-sm font-bold mb-2">Numéro de téléphone</label>
+              <input type="tel" id="phone" name="phone" required class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+            </div>
+            <div class="mb-6">
+              <label class="block text-gray-700 text-sm font-bold mb-2">
+                <input type="checkbox" required class="mr-2 leading-tight">
+                <span class="text-sm">
+                  J'accepte les <a href="#" class="text-blue-600 hover:text-blue-800">conditions d'utilisation</a> et la <a href="#" class="text-blue-600 hover:text-blue-800">politique de confidentialité</a>
+                </span>
+              </label>
+            </div>
+            <div class="flex items-center justify-between">
+              <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                S'abonner pour 1 DT/mois
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+-->
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{title}}</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: {
+              50: '#f0f9ff',
+              100: '#e0f2fe',
+              200: '#bae6fd',
+              300: '#7dd3fc',
+              400: '#38bdf8',
+              500: '#0ea5e9',
+              600: '#0284c7',
+              700: '#0369a1',
+              800: '#075985',
+              900: '#0c4a6e',
+            },
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="min-h-screen flex flex-col bg-gradient-to-b from-blue-50 to-white">
+  <!-- Éléments d'arrière-plan -->
+  <div class="absolute inset-0 overflow-hidden pointer-events-none">
+    <div class="animate-pulse-slow absolute top-20 -left-32 w-96 h-96 bg-blue-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20"></div>
+    <div class="animate-pulse-slow animation-delay-2000 absolute bottom-20 -right-32 w-96 h-96 bg-blue-300 rounded-full mix-blend-multiply filter blur-3xl opacity-30"></div>
+  </div>
+  
+  <!-- Navigation Bar -->
+  <header
+    x-data="{ scrolled: false, mobileMenuOpen: false }"
+    x-init="window.addEventListener('scroll', () => { scrolled = window.scrollY > 10 })"
+    :class="scrolled ? 'glass-card py-2' : 'bg-transparent py-4'"
+    class="fixed top-0 left-0 w-full z-50 transition-all duration-300"
+  >
+    <div class="container mx-auto flex justify-between items-center px-4">
+      <a href="/" class="flex items-center gap-2 text-xl font-medium animate-fade-in"
+        @click="mobileMenuOpen = false">
+<div class="flex items-center space-x-2">
+<img src="assets/img/logo1.png" alt="Logo" class="h-12 w-12 object-cover align-middle">
+  <span class="text-2xl tracking-tight">VipJob<span class="text-accent">.tn</span></span>
+</div> 
+
+      <!-- Desktop Menu -->
+      <nav class="hidden md:flex items-center gap-8 animate-fade-in">
+        <a href="/jobs" class="flex items-center py-2 transition-all duration-300 hover-lift text-primary/70 hover:text-primary">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="14" x="2" y="7" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+          Offres de travail
+        </a>
+        <a href="/abonnement" class="flex items-center py-2 transition-all duration-300 hover-lift text-primary/70 hover:text-primary">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="14" x="2" y="5" rx="2" ry="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg>
+          Abonnement
+        </a>
+        <a href="/sms" class="flex items-center py-2 transition-all duration-300 hover-lift text-primary/70 hover:text-primary">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          SMS
+        </a>
+        
+        <!-- Notification Icon -->
+        <button class="relative p-1 rounded-full hover:bg-secondary transition-colors">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
+          <span class="absolute top-0 right-0 h-2 w-2 rounded-full bg-red-500"></span>
+        </button>
+        
+        <!-- Avatar / Profile Picture -->
+        <div class="h-9 w-9 rounded-full overflow-hidden hover-lift">
+          <img src="https://images.unsplash.com/photo-1581091226825-a6a2a5aee158" alt="Photo de profil" class="h-full w-full object-cover" />
+        </div>
+      </nav>
+
+      <!-- Mobile Menu Button -->
+      <button
+        class="md:hidden text-primary p-2 rounded-md"
+        @click="mobileMenuOpen = !mobileMenuOpen"
+        aria-label="Toggle menu"
+      >
+        <svg x-show="!mobileMenuOpen" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>
+        <svg x-show="mobileMenuOpen" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+      </button>
+    </div>
+
+    <!-- Mobile Menu -->
+    <div
+      x-show="mobileMenuOpen"
+      x-transition:enter="transition-transform duration-300 ease-in-out"
+      x-transition:enter-start="translate-x-full"
+      x-transition:enter-end="translate-x-0"
+      x-transition:leave="transition-transform duration-300 ease-in-out"
+      x-transition:leave-start="translate-x-0"
+      x-transition:leave-end="translate-x-full"
+      class="fixed inset-0 z-40 glass-card flex flex-col pt-20 pb-6 px-6 md:hidden"
+    >
+      <nav class="flex flex-col gap-6 items-center">
+        <a href="/jobs" @click="mobileMenuOpen = false" class="flex items-center py-2 transition-all duration-300 text-primary/70 hover:text-primary">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="14" x="2" y="7" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+          Offres de travail
+        </a>
+        <a href="/subscription" @click="mobileMenuOpen = false" class="flex items-center py-2 transition-all duration-300 text-primary/70 hover:text-primary">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="14" x="2" y="5" rx="2" ry="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg>
+          Abonnement
+        </a>
+        <a href="/sms" @click="mobileMenuOpen = false" class="flex items-center py-2 transition-all duration-300 text-primary/70 hover:text-primary">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          SMS
+        </a>
+        
+        <div class="flex items-center gap-4 mt-4">
+          <!-- Mobile Notification Icon -->
+          <button class="relative p-2 rounded-full hover:bg-secondary transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
+            <span class="absolute top-1 right-1 h-2 w-2 rounded-full bg-red-500"></span>
+          </button>
+          
+          <!-- Mobile Avatar / Profile Picture -->
+          <div class="h-10 w-10 rounded-full overflow-hidden">
+            <img src="https://images.unsplash.com/photo-1581091226825-a6a2a5aee158" alt="Photo de profil" class="h-full w-full object-cover" />
+          </div>
+        </div>
+      </nav>
+    </div>
+  </header><div class="max-w-6xl mx-auto">
+  <h1 class="text-3xl font-bold text-center mb-8 text-blue-900">Gestion de votre Abonnement SMS</h1>
+  
+  {{#if message}}
+    <div class="{{#if success}}bg-green-100 text-green-800 border-green-500{{else}}bg-red-100 text-red-800 border-red-500{{/if}} border-l-4 p-4 mb-6 rounded-md">
+      <p>{{message}}</p>
+    </div>
+  {{/if}}
+  
+  {{#if hasActiveSubscription}}
+    <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-8 rounded-md">
+      <div class="flex items-center">
+        <div class="flex-shrink-0">
+          <i class="fas fa-check-circle text-green-500 text-xl"></i>
+        </div>
+        <div class="ml-3">
+          <p class="text-lg font-medium">
+            Vous êtes actuellement abonné jusqu'au {{formatDate subscription.date_fin}}
+          </p>
+          <p class="text-sm">
+            Montant: {{formatPrice subscription.montant}} DT
+          </p>
+        </div>
+      </div>
+    </div>
+    
+    <div class="mb-8 p-6 bg-gray-50 rounded-lg border border-gray-200">
+      <h2 class="text-xl font-semibold mb-4 text-gray-800">Détails de votre abonnement</h2>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+        <div>
+          <p class="text-sm text-gray-500">Date de début</p>
+          <p class="text-lg font-medium">{{formatDate subscription.date_debut}}</p>
+        </div>
+        <div>
+          <p class="text-sm text-gray-500">Date de fin</p>
+          <p class="text-lg font-medium">{{formatDate subscription.date_fin}}</p>
+        </div>
+        <div>
+          <p class="text-sm text-gray-500">Montant</p>
+          <p class="text-lg font-medium">{{formatPrice subscription.montant}} DT</p>
+        </div>
+        <div>
+          <p class="text-sm text-gray-500">Type d'abonnement</p>
+          <p class="text-lg font-medium capitalize">{{subscription.type_abonnement}}</p>
+        </div>
+      </div>
+      
+      <button id="unsubscribeBtn" class="mt-4 bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-lg text-lg transition shadow-md">
+        Se désabonner
+      </button>
+    </div>
+  {{/if}}
+  
+  <h2 class="text-2xl font-bold text-center mb-6 text-blue-800">Nos Formules d'Abonnement</h2>
+  
+  <div class="grid md:grid-cols-3 gap-6 mb-8">
+    <!-- Plan Mensuel -->
+    <div class="bg-white rounded-lg shadow-lg overflow-hidden border-t-4 border-primary-400 hover:shadow-xl transition-shadow relative">
+      <div class="p-6">
+        <h3 class="text-xl font-bold text-gray-800 mb-4">Mensuel</h3>
+        <div class="text-3xl font-bold text-primary-600 mb-4">5 DT <span class="text-sm text-gray-500 font-normal">/mois</span></div>
+        <ul class="mb-6 space-y-2">
+          <li class="flex items-center">
+            <i class="fas fa-check text-green-500 mr-2"></i>
+            <span>Alertes SMS illimitées</span>
+          </li>
+          <li class="flex items-center">
+            <i class="fas fa-check text-green-500 mr-2"></i>
+            <span>Jusqu'à 3 critères de recherche</span>
+          </li>
+          <li class="flex items-center">
+            <i class="fas fa-check text-green-500 mr-2"></i>
+            <span>Annulable à tout moment</span>
+          </li>
+        </ul>
+        
+        {{#unless hasActiveSubscription}}
+          <button 
+            data-plan="1"
+            data-price="5"
+            data-name="Mensuel"
+            class="subscribe-btn mt-6 bg-blue-900 hover:bg-blue-700 text-white px-6 py-3 rounded-lg w-full text-xl transition shadow-md"
+          >
+            S'abonner
+          </button>
+        {{/unless}}
+      </div>
+    </div>
+
+    <!-- Plan Trimestriel -->
+    <div class="bg-white rounded-lg shadow-lg overflow-hidden border-t-4 border-primary-600 transform scale-105 hover:shadow-xl transition-shadow relative">
+      <div class="bg-primary-600 text-white text-center py-1 text-sm font-medium">POPULAIRE</div>
+      <div class="p-6">
+        <h3 class="text-xl font-bold text-gray-800 mb-4">Trimestriel</h3>
+        <div class="text-3xl font-bold text-primary-600 mb-4">12 DT <span class="text-sm text-gray-500 font-normal">/trimestre</span></div>
+        <ul class="mb-6 space-y-2">
+          <li class="flex items-center">
+            <i class="fas fa-check text-green-500 mr-2"></i>
+            <span>Alertes SMS illimitées</span>
+          </li>
+          <li class="flex items-center">
+            <i class="fas fa-check text-green-500 mr-2"></i>
+            <span>Jusqu'à 5 critères de recherche</span>
+          </li>
+          <li class="flex items-center">
+            <i class="fas fa-check text-green-500 mr-2"></i>
+            <span>Économisez 20%</span>
+          </li>
+        </ul>
+        
+        {{#unless hasActiveSubscription}}
+          <button 
+            data-plan="3"
+            data-price="12"
+            data-name="Trimestriel"
+            class="subscribe-btn mt-6 bg-blue-900 hover:bg-blue-700 text-white px-6 py-3 rounded-lg w-full text-xl transition shadow-md"
+          >
+            S'abonner
+          </button>
+        {{/unless}}
+      </div>
+    </div>
+
+    <!-- Plan Annuel -->
+    <div class="bg-white rounded-lg shadow-lg overflow-hidden border-t-4 border-primary-400 hover:shadow-xl transition-shadow relative">
+      <div class="p-6">
+        <h3 class="text-xl font-bold text-gray-800 mb-4">Annuel</h3>
+        <div class="text-3xl font-bold text-primary-600 mb-4">40 DT <span class="text-sm text-gray-500 font-normal">/an</span></div>
+        <ul class="mb-6 space-y-2">
+          <li class="flex items-center">
+            <i class="fas fa-check text-green-500 mr-2"></i>
+            <span>Alertes SMS illimitées</span>
+          </li>
+          <li class="flex items-center">
+            <i class="fas fa-check text-green-500 mr-2"></i>
+            <span>Jusqu'à 10 critères de recherche</span>
+          </li>
+          <li class="flex items-center">
+            <i class="fas fa-check text-green-500 mr-2"></i>
+            <span>Économisez 33%</span>
+          </li>
+        </ul>
+        
+        {{#unless hasActiveSubscription}}
+          <button 
+            data-plan="12"
+            data-price="40"
+            data-name="Annuel"
+            class="subscribe-btn mt-6 bg-blue-900 hover:bg-blue-700 text-white px-6 py-3 rounded-lg w-full text-xl transition shadow-md"
+          >
+            S'abonner
+          </button>
+        {{/unless}}
+      </div>
+    </div>
+  </div>
+  
+  <!-- Modal de confirmation -->
+  <div id="confirmationModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+    <div class="bg-white rounded-lg p-8 max-w-md w-full">
+      <h3 class="text-2xl font-bold text-gray-800 mb-4" id="modalTitle">Confirmation</h3>
+      <p class="text-gray-700 text-lg mb-6" id="modalMessage">Êtes-vous sûr de vouloir continuer ?</p>
+      <div class="flex justify-end space-x-4">
+        <button id="cancelModalBtn" class="px-6 py-2 bg-gray-300 hover:bg-gray-400 rounded-lg text-gray-800 transition">
+          Annuler
+        </button>
+        <button id="confirmModalBtn" class="px-6 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg text-white transition">
+          Confirmer
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Éléments du modal de confirmation
+    const confirmationModal = document.getElementById('confirmationModal');
+    const modalTitle = document.getElementById('modalTitle');
+    const modalMessage = document.getElementById('modalMessage');
+    const confirmModalBtn = document.getElementById('confirmModalBtn');
+    const cancelModalBtn = document.getElementById('cancelModalBtn');
+    
+    // Boutons d'abonnement et de désabonnement
+    const subscribeButtons = document.querySelectorAll('.subscribe-btn');
+    const unsubscribeBtn = document.getElementById('unsubscribeBtn');
+    
+    let currentAction = null;
+    let currentPlan = null;
+    
+    // Fonction pour ouvrir le modal
+    function openModal(title, message, action, plan = null) {
+      modalTitle.textContent = title;
+      modalMessage.textContent = message;
+      currentAction = action;
+      currentPlan = plan;
+      confirmationModal.classList.remove('hidden');
+    }
+    
+    // Fonction pour fermer le modal
+    function closeModal() {
+      confirmationModal.classList.add('hidden');
+      currentAction = null;
+      currentPlan = null;
+    }
+    
+    // Gérer les clics sur les boutons d'abonnement
+    subscribeButtons.forEach(button => {
+      button.addEventListener('click', function() {
+        const plan = {
+          duration: parseInt(this.getAttribute('data-plan')),
+          price: parseFloat(this.getAttribute('data-price')),
+          name: this.getAttribute('data-name')
+        };
+        
+        openModal(
+          `S'abonner au plan ${plan.name}`,
+          `Vous êtes sur le point de vous abonner au plan ${plan.name} pour ${plan.price} DT. Voulez-vous continuer ?`,
+          'subscribe',
+          plan
+        );
+      });
+    });
+    
+    // Gérer le clic sur le bouton de désabonnement
+    if (unsubscribeBtn) {
+      unsubscribeBtn.addEventListener('click', function() {
+        openModal(
+          'Confirmer le désabonnement',
+          'Êtes-vous sûr de vouloir vous désabonner du service SMS ? Vous ne recevrez plus d\'alertes pour les nouvelles offres d\'emploi.',
+          'unsubscribe'
+        );
+      });
+    }
+    
+    // Gérer le clic sur le bouton de confirmation du modal
+    confirmModalBtn.addEventListener('click', function() {
+      if (currentAction === 'subscribe' && currentPlan) {
+        // Envoyer la requête d'abonnement
+        fetch('/abonnement/subscribe', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            duration: currentPlan.duration,
+            price: currentPlan.price
+          }),
+        })
+        .then(response => response.json())
+        .then(data => {
+          closeModal();
+          
+          if (data.success) {
+            window.location.href = '/abonnement?success=true&message=' + encodeURIComponent(data.message);
+          } else {
+            window.location.href = '/abonnement?success=false&message=' + encodeURIComponent(data.message);
+          }
+        })
+        .catch(error => {
+          closeModal();
+          console.error('Erreur:', error);
+          window.location.href = '/abonnement?success=false&message=' + encodeURIComponent('Une erreur est survenue lors de l\'abonnement');
+        });
+      } else if (currentAction === 'unsubscribe') {
+        // Envoyer la requête de désabonnement
+        fetch('/abonnement/unsubscribe', {
+          method: 'POST',
+          credentials: 'include',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        })
+        .then(response => response.json())
+        .then(data => {
+          closeModal();
+          
+          if (data.success) {
+            window.location.href = '/abonnement?success=true&message=' + encodeURIComponent(data.message);
+          } else {
+            window.location.href = '/abonnement?success=false&message=' + encodeURIComponent(data.message);
+          }
+        })
+        .catch(error => {
+          closeModal();
+          console.error('Erreur:', error);
+          window.location.href = '/abonnement?success=false&message=' + encodeURIComponent('Une erreur est survenue lors du désabonnement');
+        });
+      }
+    });
+    
+    // Gérer le clic sur le bouton d'annulation du modal
+    cancelModalBtn.addEventListener('click', closeModal);
+    
+    // Fermer le modal si on clique en dehors
+    confirmationModal.addEventListener('click', function(event) {
+      if (event.target === confirmationModal) {
+        closeModal();
+      }
+    });
+  });
+</script>
+
+
+
+
+
+ <!-- Footer -->
+  <footer class="bg-blue-50/80 border-t border-blue-100 py-16 relative z-10">
+    <div class="container mx-auto px-4">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-10">
+        <div class="col-span-1 md:col-span-2">
+          <a href="/" class="inline-block mb-4">
+            <span class="text-2xl font-medium tracking-tight">VipJob<span class="text-blue-600">.tn</span></span>
+          </a>
+          <p class="text-muted-foreground mb-6 max-w-md">
+            VipJob.tn est une plateforme d'offres d'emploi qui aide les chercheurs d'emploi à trouver des opportunités adaptées à leur profil de manière simple et rapide.
+          </p>
+          <div class="flex items-center gap-4">
+            <a href="#" class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 hover:bg-blue-200 transition-colors">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+            </a>
+            <a href="#" class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 hover:bg-blue-200 transition-colors">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z"/></svg>
+            </a>
+            <a href="#" class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 hover:bg-blue-200 transition-colors">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>
+            </a>
+            <a href="#" class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 hover:bg-blue-200 transition-colors">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect width="4" height="12" x="2" y="9"/><circle cx="4" cy="4" r="2"/></svg>
+            </a>
+          </div>
+        </div>
+        
+        <div>
+          <h3 class="font-medium text-lg mb-4">Liens Rapides</h3>
+          <ul class="space-y-3">
+            <li><a href="/" class="text-muted-foreground hover:text-blue-600 transition-colors">Accueil</a></li>
+            <li><a href="/profile" class="text-muted-foreground hover:text-blue-600 transition-colors">Profil</a></li>
+            <li><a href="/jobs" class="text-muted-foreground hover:text-blue-600 transition-colors">Recherche d'emploi</a></li>
+            <li><a href="#" class="text-muted-foreground hover:text-blue-600 transition-colors">Entreprises</a></li>
+            <li><a href="#" class="text-muted-foreground hover:text-blue-600 transition-colors">Blog</a></li>
+          </ul>
+        </div>
+        
+        <div>
+          <h3 class="font-medium text-lg mb-4">Contact</h3>
+          <ul class="space-y-4">
+            <li class="flex items-start gap-3">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-blue-600 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+              <span class="text-muted-foreground">Rue de la Bourse, Les Berges du Lac, Tunis</span>
+            </li>
+            <li class="flex items-center gap-3">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-blue-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+              <a href="mailto:contact@vipjob.tn" class="text-muted-foreground hover:text-blue-600 transition-colors">contact@vipjob.tn</a>
+            </li>
+            <li class="flex items-center gap-3">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-blue-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="20" x="5" y="2" rx="2" ry="2"/><path d="M12 18h.01"/></svg>
+              <a href="tel:+21671000000" class="text-muted-foreground hover:text-blue-600 transition-colors">+216 71 000 000</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+      
+      <div class="border-t border-blue-100 mt-12 pt-6 flex flex-col md:flex-row justify-between items-center gap-4">
+        <p class="text-muted-foreground text-sm">
+          © 2023 VipJob.tn. Tous droits réservés.
+        </p>
+        <div class="flex gap-6">
+          <a href="#" class="text-sm text-muted-foreground hover:text-blue-600 transition-colors">Conditions d'utilisation</a>
+          <a href="#" class="text-sm text-muted-foreground hover:text-blue-600 transition-colors">Politique de confidentialité</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+ 
+</body>
+</html>

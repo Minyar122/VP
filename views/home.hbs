@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VipJob.tn - Trouvez votre emploi idéal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+        }
+        .glass-card {
+            backdrop-filter: blur(16px);
+            background-color: rgba(255, 255, 255, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+        .glass-card-hover:hover {
+            background-color: rgba(255, 255, 255, 0.8);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+        }
+        @keyframes fade-in {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @keyframes slide-up {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        @keyframes slide-down {
+            from { transform: translateY(-20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        @keyframes pulse-slow {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.8; }
+        }
+        .animate-fade-in { animation: fade-in 0.5s ease-out; }
+        .animate-slide-up { animation: slide-up 0.5s ease-out; }
+        .animate-slide-down { animation: slide-down 0.5s ease-out; }
+        .animate-pulse-slow { animation: pulse-slow 3s ease-in-out infinite; }
+        .hover-lift { transition: transform 0.3s; }
+        .hover-lift:hover { transform: translateY(-4px); }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col bg-gradient-to-b from-blue-50 to-white relative"> <!-- Added 'relative' -->
+  <!-- Éléments d'arrière-plan -->
+  <div class="fixed inset-0 overflow-hidden pointer-events-none z-[-1]"> <!-- Changed to fixed + z-index -->
+    <div class="animate-pulse-slow absolute top-20 -left-32 w-96 h-96 bg-blue-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20"></div>
+    <div class="animate-pulse-slow animation-delay-2000 absolute bottom-20 -right-32 w-96 h-96 bg-blue-300 rounded-full mix-blend-multiply filter blur-3xl opacity-30"></div>
+  </div>
+
+    <!-- Navbar -->
+    <nav class="bg-white p-4 shadow-md">
+    <div class="container mx-auto flex items-center justify-between">
+        <!-- Logo/Name with darker text -->
+<div class="container mx-auto flex justify-between items-center px-4">
+      <a href="/" class="flex items-center gap-2 text-xl font-medium animate-fade-in"
+        @click="mobileMenuOpen = false">
+<div class="flex items-center space-x-2">
+<img src="assets/img/logo1.png" alt="Logo" class="h-12 w-12 object-cover align-middle">
+  <span class="text-2xl tracking-tight">VipJob<span class="text-accent">.tn</span></span>
+</div> 
+        <!-- Navbar Links -->
+        <ul class="flex space-x-6 items-center">
+            <li><a href="/" class="text-black hover:text-blue-600 items-center">
+                <i class="fas fa-home mr-2"></i> Accueil
+            </a></li>
+
+            <li><a href="/contact" class="text-black hover:text-blue-600  items-center">Contact</a></li>
+
+            <!-- Buttons for login and register -->
+            <li>
+                <a href="/login" class="bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700">
+                    Se connecter
+                </a>
+            </li>
+            <li>
+                <a href="/register" class="border-2 border-black text-black py-2 px-4 rounded hover:bg-gray-100">
+                    S'inscrire
+                </a>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+
+    <!-- Hero Section -->
+    <section class="relative pt-32 pb-24 min-h-[85vh] flex items-center">
+        <div class="absolute inset-0 -z-10 overflow-hidden">
+            <div class="absolute -top-40 -right-40 w-80 h-80 bg-blue-100 rounded-full blur-3xl opacity-30"></div>
+            <div class="absolute top-1/2 -left-40 w-80 h-80 bg-purple-100 rounded-full blur-3xl opacity-40"></div>
+        </div>
+        
+        <div class="container mx-auto px-4 animate-fade-in">
+            <div class="flex flex-col md:flex-row items-center gap-12 md:gap-16">
+                <div class="w-full md:w-1/2 animate-slide-up">
+                    <div class="inline-block px-3 py-1 mb-4 rounded-full bg-blue-100 text-sm font-medium text-blue-800">
+                        Trouvez votre emploi idéal
+                    </div>
+                    <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight">
+                        Votre carrière, 
+                        <span class="relative">
+                            simplifiée
+                            <span class="absolute bottom-1 left-0 w-full h-3 bg-blue-100 -z-10"></span>
+                        </span>
+                    </h1>
+                    <p class="text-lg text-gray-600 mb-8 max-w-md">
+                        Recevez des offres d'emploi personnalisées directement par SMS, selon vos compétences et préférences.
+                    </p>
+                    
+                    <div class="flex flex-col sm:flex-row gap-4">
+                        <a href="/register" class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors inline-flex items-center justify-center hover-lift">
+                            Créer mon profil
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-2" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd" />
+                            </svg>
+                        </a>
+                        <a href="/jobs" class="px-6 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-center hover-lift">
+                            Explorer les offres
+                        </a>
+                    </div>
+                    
+                    <div class="mt-12 flex items-center gap-8">
+                        <div class="hover-lift">
+                            <span class="text-3xl font-bold">2,000+</span>
+                            <span class="text-gray-600 text-sm block">Offres d'emploi</span>
+                        </div>
+                        <div class="hover-lift">
+                            <span class="text-3xl font-bold">500+</span>
+                            <span class="text-gray-600 text-sm block">Entreprises</span>
+                        </div>
+                        <div class="hover-lift">
+                            <span class="text-3xl font-bold">10k+</span>
+                            <span class="text-gray-600 text-sm block">Utilisateurs</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="w-full md:w-1/2 animate-slide-down">
+                    <div class="relative">
+                        <div class="glass-card rounded-xl overflow-hidden shadow-lg relative z-10">
+                            <img 
+                                src="https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d" 
+                                alt="Personne cherchant un emploi" 
+                                class="w-full h-auto object-cover aspect-[4/3]"
+                            />
+                        </div>
+                        
+                        <div class="absolute top-8 -right-4 z-20 glass-card rounded-lg p-4 animate-pulse-slow">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-white">
+                                    SMS
+                                </div>
+                                <div>
+                                    <div class="text-sm font-medium">Alerte Emploi</div>
+                                    <div class="text-xs text-gray-500">Développeur Web - Tunis</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="absolute -bottom-2 -left-4 z-20 glass-card rounded-lg px-4 py-3 animate-pulse-slow">
+                            <div class="flex items-center">
+                                <div class="font-medium mr-2">94%</div>
+                                <div class="text-xs text-gray-500">Taux de satisfaction</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Sections suivantes (Job Search Form, Featured Jobs, SMS Notifications, etc.) -->
+    <!-- ... (contenu restant inchangé mais nettoyé des doublons) ... -->
+   <section class="py-16 px-4">
+    <div class="container mx-auto">
+        <div class="glass-card rounded-2xl p-8 max-w-5xl mx-auto shadow-lg animate-slide-up">
+            <form class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div class="relative">
+                    
+                   
+                </div>
+                
+                <div class="relative">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" />
+                    </svg>
+                    <select class="pl-10 h-12 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none transition-all">
+                        <option value="" disabled selected>Lieu</option>
+                        <option value="tunis">Tunis</option>
+                        <option value="sfax">Sfax</option>
+                        <option value="sousse">Sousse</option>
+                        <option value="monastir">Monastir</option>
+                        <option value="remote">Télétravail</option>
+                    </select>
+                </div>
+                
+                <div class="relative">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M6 6V5a3 3 0 013-3h2a3 3 0 013 3v1h2a2 2 0 012 2v3.57A22.952 22.952 0 0110 13a22.95 22.95 0 01-8-1.43V8a2 2 0 012-2h2zm2-1a1 1 0 011-1h2a1 1 0 011 1v1H8V5zm1 5a1 1 0 011-1h.01a1 1 0 110 2H10a1 1 0 01-1-1z" clip-rule="evenodd" />
+                        <path d="M2 13.692V16a2 2 0 002 2h12a2 2 0 002-2v-2.308A24.974 24.974 0 0110 15c-2.796 0-5.487-.46-8-1.308z" />
+                    </svg>
+                    <select class="pl-10 h-12 w-full rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 appearance-none transition-all">
+                       
+                    <option value="" disabled selected>Domaine</option>
+                    <option value="informatique">Informatique</option>
+                    <option value="science">Science</option>
+                    <option value="finance">Finance</option>
+                    <option value="marketing">Marketing</option>
+                     <option value="ressources-humaines">Ressources Humaines</option>
+                     <option value="ingenierie">Ingénierie</option>
+                    <option value="communication">Communication</option>
+                      <option value="commerce">Commerce</option>
+                <option value="sante">Santé</option>
+                 <option value="droit">Droit</option>
+                <option value="architecture">Architecture</option>
+                   <option value="logistique">Logistique</option>
+              <option value="tourisme">Tourisme</option>
+               <option value="education">Éducation</option>
+             <option value="environnement">Environnement</option>
+             </select>
+
+                </div>
+                
+                <button type="submit" class="h-12 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors hover-lift">
+                    Rechercher
+                </button>
+            </form>
+        </div>
+    </div>
+</section>
+
+<!-- Featured Jobs Section -->
+
+<!-- Section des Offres d'emploi recommandées -->
+<section class="py-24 px-8 sm:px-16 md:px-24 bg-gray-50"> 
+  <div class="container mx-auto"> 
+    <!-- Titre et description de la section -->
+    <div class="text-center mb-16 animate-slide-up"> 
+      <div class="inline-block px-3 py-1 mb-4 rounded-full bg-blue-100 text-sm font-medium text-blue-800"> 
+        Opportunités Professionnelles 
+      </div> 
+      <h2 class="text-3xl md:text-4xl font-bold mb-4">Offres d'emploi recommandées</h2> 
+      <p class="text-gray-600 max-w-xl mx-auto"> 
+        Découvrez les dernières opportunités d'emploi correspondant à vos compétences et à vos préférences professionnelles. 
+      </p> 
+    </div> 
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <!-- Offre 1 -->
+        <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-all duration-300">
+          <div class="relative">
+    <img src="https://images.unsplash.com/photo-1584432810601-6c7f27d2362b" alt="Service médical" class="w-full h-48 object-cover">
+            <div class="absolute top-0 right-0 bg-primary text-white px-3 py-1 m-2 rounded-full text-sm">
+              Temps plein
+            </div>
+            <div class="absolute bottom-0 left-0 bg-white p-2 m-2 rounded-full">
+      <img src="https://images.unsplash.com/photo-1576091160550-2173dba999ef" alt="MediCare" class="w-12 h-12 rounded-full object-cover">
+            </div>
+          </div>
+          <div class="p-6">
+            <div class="flex justify-between items-start mb-2">
+              <h3 class="text-xl font-bold text-gray-800">Infirmier Diplômé d'Éta</h3>
+              <span class="text-blue-600 font-semibold">1,800 - 2,300 TND</span>
+            </div>
+            <div class="mb-4">
+              <span class="text-gray-600">Centre Médical MediCare</span>
+            </div>
+            <p class="text-gray-600 mb-4 line-clamp-2">
+              Recherche d'infirmiers diplômés pour service de soins intensifs. Expérience en milieu hospitalier requise.
+            </p>
+            <div class="flex flex-wrap gap-2 mb-4">
+              <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">Santé</span>
+              <span class="bg-gray-100 text-gray-800 text-xs px-2 py-1 rounded-full">
+                <i class="fas fa-map-marker-alt mr-1"></i> Monastir
+              </span>
+              <span class="bg-gray-100 text-gray-800 text-xs px-2 py-1 rounded-full">
+                <i class="fas fa-clock mr-1"></i>  Publié il y a 6 heures
+              </span>
+            </div>
+            <div class="flex justify-between items-center">
+              <a href="#" class="text-blue-600 hover:text-blue-700 font-medium">Voir détails</a>
+              <button class="text-gray-400 hover:text-blue-600 transition">
+                <i class="far fa-bookmark text-xl"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Offre 2 -->
+        <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-all duration-300">
+          <div class="relative">
+    <img src="https://images.unsplash.com/photo-1580584126903-c17d41830450" alt="Enseignement" class="w-full h-48 object-cover">
+            <div class="absolute top-0 right-0 bg-primary text-white px-3 py-1 m-2 rounded-full text-sm">
+              Temps partiel
+            </div>
+            <div class="absolute bottom-0 left-0 bg-white p-2 m-2 rounded-full">
+      <img src="https://images.unsplash.com/photo-1591122954169-14e1d2ed563e" alt="Smart School" class="w-12 h-12 rounded-full object-cover">
+            </div>
+          </div>
+          <div class="p-6">
+            <div class="flex justify-between items-start mb-2">
+              <h3 class="text-xl font-bold text-gray-800">Professeur d'Anglais</h3>
+              <span class="text-blue-600 font-semibold">1,200 - 1,800 TND</span>
+            </div>
+            <div class="mb-4">
+              <span class="text-gray-600">École Internationale Smart School</span>
+            </div>
+            <p class="text-gray-600 mb-4 line-clamp-2">
+Enseignant bilingue anglais/français pour élèves du primaire. Expérience avec enfants nécessaire.              Secteur : Solutions IT.
+            </p>
+            <div class="flex flex-wrap gap-2 mb-4">
+              <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">Éducation</span>
+              <span class="bg-gray-100 text-gray-800 text-xs px-2 py-1 rounded-full">
+                <i class="fas fa-map-marker-alt mr-1"></i> Nabeul
+              </span>
+              <span class="bg-gray-100 text-gray-800 text-xs px-2 py-1 rounded-full">
+                <i class="fas fa-clock mr-1"></i> Publié il y a 3 jours
+              </span>
+            </div>
+            <div class="flex justify-between items-center">
+              <a href="#" class="text-blue-600 hover:text-blue-700 font-medium">Voir détails</a>
+              <button class="text-gray-400 hover:text-blue-600 transition">
+                <i class="far fa-bookmark text-xl"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Offre 3 -->
+        <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-all duration-300">
+          <div class="relative">
+           <img src="https://images.unsplash.com/photo-1550751827-4bd374c3f58b" alt="Cybersécurité" class="w-full h-48 object-cover">       
+                  <div class="absolute top-0 right-0 bg-primary text-white px-3 py-1 m-2 rounded-full text-sm">
+              CDI
+            </div>
+            <div class="absolute bottom-0 left-0 bg-white p-2 m-2 rounded-full">
+      <img src="https://images.unsplash.com/photo-1587440871875-191322ee64b0" alt="SecureTech" class="w-12 h-12 rounded-full object-cover">
+            </div>
+          </div>
+          <div class="p-6">
+            <div class="flex justify-between items-start mb-2">
+              <h3 class="text-xl font-bold text-gray-800">Expert en Cybersécurité</h3>
+              <span class="text-blue-600 font-semibold">5,000 - 6,500 TND</span>
+            </div>
+            <div class="mb-4">
+              <span class="text-gray-600">SecureTech Solutions</span>
+            </div>
+            <p class="text-gray-600 mb-4 line-clamp-2">
+Recherche d'un expert en sécurité informatique pour la protection des systèmes et la gestion des vulnérabilités. 
+      Certifications CISSP/CEH requises.
+                  </p>
+            <div class="flex flex-wrap gap-2 mb-4">
+              <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full">Informatique</span>
+              <span class="bg-gray-100 text-gray-800 text-xs px-2 py-1 rounded-full">
+                <i class="fas fa-map-marker-alt mr-1"></i> Ariana
+              </span>
+              <span class="bg-gray-100 text-gray-800 text-xs px-2 py-1 rounded-full">
+                <i class="fas fa-clock mr-1"></i>  Publié il y a 1 jour
+              </span>
+            </div>
+            <div class="flex justify-between items-center">
+              <a href="#" class="text-blue-600 hover:text-blue-700 font-medium">Voir détails</a>
+              <button class="text-gray-400 hover:text-blue-600 transition">
+                <i class="far fa-bookmark text-xl"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Liste des offres d'emploi -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-fade-in"> 
+      {{#each featuredJobs}} 
+      <div class="glass-card glass-card-hover rounded-x1 p-6 transition-all duration-300 hover-lift {{#if this.isFeatured}}border-1-4 border-1-blue-600{{/if}}"> 
+
+        <!-- Badge "Recommandé" pour les offres en vedette -->
+        {{#if this.isFeatured}} 
+        <div class="flex justify-end mb-4">
+          <span class="inline-flex items-center gap-1 py-1 px-3 rounded-full border border-gray-200 text-xs font-medium">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 text-blue-600" viewBox="0 0 20 20" fill="currentColor"> 
+              <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l11.07 3.292a1 1 0 0 1 .95.69h3.462c.969 0 1.371 1.24.588 1.811-2.8 2.034a1 1 0 0 1-.364 1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 0 1 .951-.691l11.07-3.292c.3-.921-.755-1.688-1.54-1.118-2.8 2.034a1 1 0 0 1-1.175 0-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.175-3.292z"/>
+            </svg> 
+            <span>Recommandé</span> 
+          </span> 
+        </div> 
+        {{/if}}
+
+        <!-- Contenu de l'offre d'emploi -->
+        <div class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
+          <div class="flex items-start space-x-4">
+            <img src="/path/to/logo.png" alt="Nom entreprise" class="w-12 h-12 rounded-lg object-cover"/>
+            <div class="flex-1">
+              <h3 class="font-semibold text-lg text-gray-900">Titre du poste</h3>
+              <div class="flex items-center space-x-2 text-gray-500 text-sm mt-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                </svg>
+                <span>Nom entreprise</span>
+              </div>
+              <div class="flex items-center space-x-2 text-gray-500 text-sm mt-1">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                </svg>
+                <span>Localisation</span>
+              </div>
+              <div class="mt-4 flex items-center justify-between">
+                <span class="px-3 py-1 bg-indigo-100 text-indigo-800 text-sm rounded-full">
+                  Type de contrat
+                </span>
+                <button class="text-indigo-600 hover:text-indigo-800 text-sm font-medium">
+                  Voir l'offre
+                </button>
+              </div>
+            </div>
+          </div> 
+        </div> 
+
+        <!-- Détails supplémentaires de l'offre -->
+        <!-- Carte de l'offre -->
+<div class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
+  <div class="flex items-start space-x-4">
+    <img src="https://via.placeholder.com/50" alt="TechSolutions Logo" class="w-12 h-12 rounded-lg object-cover"/>
+    <div class="flex-1">
+      <h3 class="font-semibold text-lg text-gray-900">Développeur Full Stack</h3>
+      <p class="text-gray-500 text-sm">TechSolutions</p>
+      <div class="flex items-center space-x-2 text-gray-500 text-xs mt-2">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+        </svg>
+        <span>Tunis</span>
+      </div>
+      <div class="flex items-center space-x-2 text-gray-500 text-xs mt-1">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+        </svg>
+        <span>Temps plein</span>
+      </div>
+      <div class="flex items-center space-x-2 text-gray-500 text-xs mt-1">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 3h-4.5a2.5 2.5 0 00-5 0H3a1 1 0 100 2h1v13a1 1 0 001 1h12a1 1 0 001-1V5h1a1 1 0 100-2h-3.5a2.5 2.5 0 00-5 0H7a2.5 2.5 0 00-5 0H3a1 1 0 100 2h1v13a1 1 0 001 1h12a1 1 0 001-1V5h1a1 1 0 100-2h-3.5a2.5 2.5 0 00-5 0z"></path>
+        </svg>
+        <span>Il y a 2 jours</span>
+      </div>
+      <div class="flex items-center text-sm text-gray-500 mt-3">
+        <span class="mr-2">React, Node.js, MongoDB</span>
+      </div>
+      <div class="flex items-center text-sm font-semibold mt-3">
+        <span class="mr-2">Salaire: 3000-4000 TND</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bouton "Voir l'offre" -->
+  <div class="flex justify-end mt-4">
+    <a href="#" class="bg-black text-white py-2 px-6 rounded-md hover:bg-gray-800 transition-all">
+      Voir l'offre
+    </a>
+  </div>
+</div>
+
+
+        <!-- Bouton "Voir l'offre" en noir -->
+        <div class="flex justify-end mt-4">
+          <a href="#" class="bg-black text-white py-2 px-6 rounded-md hover:bg-gray-800 transition-all">
+            Voir l'offre
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Lien pour voir toutes les offres -->
+    <div class="text-center mt-12"> 
+      <a href="/jobs" class="inline-flex items-center justify-center px-6 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors hover-lift"> 
+        Voir toutes les offres 
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-2" viewBox="0 0 20 20" fill="currentColor"> 
+          <path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd"/>
+        </svg> 
+      </a> 
+    </div> 
+      {{/each}} 
+    </div>
+
+    <!-- Lien pour voir toutes les offres -->
+    <div class="text-center mt-12"> 
+      <a href="/jobs" class="inline-flex items-center justify-center px-6 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors hover-lift"> 
+        Voir toutes les offres 
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-2" viewBox="0 0 20 20" fill="currentColor"> 
+          <path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd"/>
+        </svg> 
+      </a> 
+    </div> 
+  </div> 
+</section> 
+
+<!-- Section des Notifications SMS -->
+<section class="py-24 px-8 sm:px-16 md:px-24"> 
+  <div class="container mx-auto"> 
+    <div class="glass-card rounded-2xl p-8 md:p-12 flex flex-col md:flex-row items-center gap-8 md:gap-12 animate-slide-up"> 
+      <div class="w-full md:w-2/5">
+        <img src="https://images.unsplash.com/photo-1498050108023-c5249f4df085" alt="Recevez des offres par SMS" class="rounded-xl w-full h-auto aspect-video object-cover"/>
+      </div> 
+      <div class="w-full md:w-3/5"> 
+        <div class="inline-block px-3 py-1 mb-4 rounded-full bg-blue-100 text-sm font-medium text-blue-800"> 
+          Notifications SMS 
+        </div> 
+        <h2 class="text-2xl md:text-3xl font-bold mb-4"> 
+          Ne manquez plus aucune opportunité 
+        </h2> 
+        <p class="text-gray-600 mb-8"> 
+          Recevez des alertes personnalisées directement sur votre téléphone dès qu'une offre correspond à votre profil. Notre système intelligent filtre les offres en fonction de vos compétences, de votre expérience et de vos préférences. 
+        </p>
+        <div class="flex flex-col sm:flex-row gap-3"> 
+          <a href="#" class="px-6 py-3 bg-white shadow-md border border-gray-100 hover:shadow-lg rounded-lg transition-all duration-300 hover-lift"> 
+            Voir les plans 
+          </a> 
+          <a href="#" class="text-gray-600 hover:text-blue-600 transition-colors px-4 py-3 inline-flex items-center"> 
+            En savoir plus 
+            <svg class="ml-2 w-4 h-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"> 
+              <path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd"/> 
+            </svg> 
+          </a> 
+        </div> 
+      </div> 
+    </div> 
+  </div> 
+</section>
+
+    <!-- Footer -->
+<!-- Footer -->
+<footer class="bg-blue-50/80 border-t border-blue-100 py-16 relative z-10">
+    <div class="container mx-auto px-4">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-10">
+        <div class="col-span-1 md:col-span-2">
+          <a href="/" class="inline-block mb-4">
+            <span class="text-2xl font-medium tracking-tight">VipJob<span class="text-blue-600">.tn</span></span>
+          </a>
+          <p class="text-muted-foreground mb-6 max-w-md">
+            VipJob.tn est une plateforme d'offres d'emploi qui aide les chercheurs d'emploi à trouver des opportunités adaptées à leur profil de manière simple et rapide.
+          </p>
+          <div class="flex items-center gap-4">
+            <a href="#" class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 hover:bg-blue-200 transition-colors">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+            </a>
+            <a href="#" class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 hover:bg-blue-200 transition-colors">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z"/></svg>
+            </a>
+            <a href="#" class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 hover:bg-blue-200 transition-colors">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>
+            </a>
+            <a href="#" class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 hover:bg-blue-200 transition-colors">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect width="4" height="12" x="2" y="9"/><circle cx="4" cy="4" r="2"/></svg>
+            </a>
+          </div>
+        </div>
+        
+        <div>
+          <h3 class="font-medium text-lg mb-4">Liens Rapides</h3>
+          <ul class="space-y-3">
+            <li><a href="/" class="text-muted-foreground hover:text-blue-600 transition-colors">Accueil</a></li>
+            <li><a href="#" class="text-muted-foreground hover:text-blue-600 transition-colors">Profil</a></li>
+            <li><a href="/jobs" class="text-muted-foreground hover:text-blue-600 transition-colors">Recherche d'emploi</a></li>
+            <li><a href="#" class="text-muted-foreground hover:text-blue-600 transition-colors">Entreprises</a></li>
+            <li><a href="#" class="text-muted-foreground hover:text-blue-600 transition-colors">Blog</a></li>
+          </ul>
+        </div>
+        
+        <div>
+          <h3 class="font-medium text-lg mb-4">Contact</h3>
+          <ul class="space-y-4">
+            <li class="flex items-start gap-3">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-blue-600 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+              <span class="text-muted-foreground">Rue de la Bourse, Les Berges du Lac, Tunis</span>
+            </li>
+            <li class="flex items-center gap-3">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-blue-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+              <a href="mailto:contact@vipjob.tn" class="text-muted-foreground hover:text-blue-600 transition-colors">contact@vipjob.tn</a>
+            </li>
+            <li class="flex items-center gap-3">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-blue-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="20" x="5" y="2" rx="2" ry="2"/><path d="M12 18h.01"/></svg>
+              <a href="tel:+21671000000" class="text-muted-foreground hover:text-blue-600 transition-colors">+216 71 000 000</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+      
+      <div class="border-t border-blue-100 mt-12 pt-6 flex flex-col md:flex-row justify-between items-center gap-4">
+        <p class="text-muted-foreground text-sm">
+          © 2023 VipJob.tn. Tous droits réservés.
+        </p>
+        <div class="flex gap-6">
+          <a href="#" class="text-sm text-muted-foreground hover:text-blue-600 transition-colors">Conditions d'utilisation</a>
+          <a href="#" class="text-sm text-muted-foreground hover:text-blue-600 transition-colors">Politique de confidentialité</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+     
+
+
+
+</body>
+</html>
