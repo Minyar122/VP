@@ -1,72 +1,437 @@
 const express = require("express");
-const { engine } = require("express-handlebars");
+const exphbs = require("express-handlebars");
+const bodyParser = require("body-parser");
+const mysql = require("mysql2");
+const nodemailer = require("nodemailer");
+const crypto = require("crypto");
 const path = require("path");
-const mysql = require("mysql");
-const bodyParser = require('body-parser');
+const session = require("express-session"); // Pour gérer les sessions
+const { engine } = require("express-handlebars");
 const jsPDF = require('jspdf');
 const { autoTable } = require('jspdf-autotable');
 const PDFDocument = require('pdfkit');
 const multer = require('multer');
 const { format, addMonths } = require('date-fns');
-const session = require('express-session');
-
+require('dotenv').config();
+const cors = require('cors');
 const app = express();
 const port = 3001;
 
-// Set up Handlebars as the template engine
-app.engine("hbs", engine({ extname: ".hbs" }));
+// Configuration de Handlebars
+app.engine("hbs", exphbs.engine({ extname: ".hbs" }));
 app.set("view engine", "hbs");
-app.set("views", "./views");
+app.set("views", path.join(__dirname, "views"));
+app.use(express.static('public'));
 
-// Serve static files
-app.use(express.static(path.join(process.cwd(), "public")));
+// Configuration de la base de données
+const db = mysql.createConnection({
+  host: "localhost",
+  user: "root",
+  password: "", // Mot de passe de votre base de données
+  database: "vipjob", // Nom de la base de données
+});
 
-// Middleware pour analyser les requêtes JSON
-app.use(express.json());
+// Connexion à la base de données
+db.connect((err) => {
+  if (err) {
+    console.error("Erreur de connexion à la base de données:", err);
+  } else {
+    console.log("Connecté à la base de données MySQL");
+  }
+});
 
-// Routes
+// Middleware pour parser les requêtes JSON et les données de formulaire
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+
+// Configuration des sessions
+app.use(
+  session({
+    secret: "votre_clé_secrète", // Clé secrète pour signer les cookies de session
+    resave: false,
+    saveUninitialized: true,
+    cookie: { secure: false }, // À mettre à `true` si vous utilisez HTTPS
+  })
+);
+
+// Configuration de Nodemailer pour envoyer des e-mails
+const transporter = nodemailer.createTransport({
+  host: "mail.itqanlabs.com",
+  port: 587,
+  secure: false,
+  auth: {
+    user: "vipjob-project@itqanlabs.com",
+    pass: "JNLFWgG0A9QYNq2",
+  },
+  tls: {
+    rejectUnauthorized: false,
+  },
+});
+
+// Vérification de la connexion SMTP
+transporter.verify((error, success) => {
+  if (error) {
+    console.error("Erreur de connexion SMTP :", error);
+  } else {
+    console.log("Serveur SMTP prêt à envoyer des e-mails");
+  }
+});
+
+// Route pour gérer la connexion
+app.post("/login", (req, res) => {
+  const { email, password } = req.body;
+
+  // Vérifier si l'utilisateur existe dans la base de données
+  db.query("SELECT * FROM utilisateur WHERE email = ?", [email], (err, results) => {
+    if (err) {
+      console.error("Erreur lors de la vérification de l'e-mail:", err);
+      return res.status(500).json({ success: false, message: "Erreur serveur" });
+    }
+    if (results.length === 0) {
+      return res.status(400).json({ success: false, message: "Cet e-mail n'est pas enregistré." });
+    }
+
+    // Vérifier le mot de passe
+    const hashedPassword = crypto.createHash("sha256").update(password).digest("hex");
+    if (hashedPassword !== results[0].mot_de_passe) {
+      return res.status(400).json({ success: false, message: "Mot de passe incorrect." });
+    }
+
+    // Si tout est correct, créer une session pour l'utilisateur
+    req.session.user = {
+      id: results[0].id,
+      email: results[0].email,
+      role: results[0].role_id,
+    };
+
+    // Renvoyer une réponse de succès
+    res.status(200).json({ success: true, data:results  });
+  });
+});
+
+// Route pour la page de tableau de bord
+app.get("/profile", (req, res) => {
+  // Vérifier si l'utilisateur est connecté
+  if (!req.session.user) {
+    return res.redirect("/login"); // Rediriger vers la page de connexion si l'utilisateur n'est pas connecté
+  }
+  app.get("/abonnement", (req, res) => {
+    res.render("abonnement");
+  });
+  // Afficher la page de tableau de bord
+  res.render("profile", { title: "Tableau de bord - VipJob.tn", user: req.session.user });
+});
+
+// Route pour gérer la déconnexion
+app.get("/logout", (req, res) => {
+  // Détruire la session
+  req.session.destroy((err) => {
+    if (err) {
+      console.error("Erreur lors de la déconnexion:", err);
+      return res.status(500).json({ success: false, message: "Erreur lors de la déconnexion" });
+    }
+    res.redirect("/login"); // Rediriger vers la page de connexion
+  });
+});
+
+// Route pour gérer l'inscription
+app.post("/signup", (req, res) => {
+  const { prenom, nom, email, telephone, password, confirmPassword, gouvernorat } = req.body;
+
+
+
+
+
+
+  // Vérifier que les mots de passe correspondent
+  if (password !== confirmPassword) {
+    return res.status(400).json({ success: false, message: "Les mots de passe ne correspondent pas." });
+  }
+
+  // Vérifier que tous les champs sont remplis
+  if (!prenom || !nom || !email || !telephone || !password || !gouvernorat) {
+    return res.status(400).json({ success: false, message: "Tous les champs sont obligatoires." });
+  }
+
+  // Vérifier que l'e-mail n'existe pas déjà
+  db.query("SELECT * FROM utilisateur WHERE email = ?", [email], (err, results) => {
+    if (err) {
+      console.error("Erreur lors de la vérification de l'e-mail:", err);
+      return res.status(500).json({ success: false, message: "Erreur serveur" });
+    }
+    if (results.length > 0) {
+      return res.status(400).json({ success: false, message: "Cet e-mail est déjà utilisé." });
+    }
+
+    // Générer un code de confirmation
+    const confirmationCode = crypto.randomBytes(3).toString("hex").toUpperCase();
+
+    // Hacher le mot de passe (pour la sécurité)
+    const hashedPassword = crypto.createHash("sha256").update(password).digest("hex");
+
+
+
+
+
+    
+// Route pour l'inscription
+app.post('/signup', (req, res) => {
+  try {
+    const { email, password, prenom, nom, telephone, gouvernorat } = req.body;
+
+    // Vérifier que tous les champs sont présents
+    if (!email || !password || !prenom || !nom || !telephone || !gouvernorat) {
+      return res.status(400).json({ message: 'Tous les champs sont obligatoires.' });
+    }
+
+    // Vérifier si l'utilisateur existe déjà
+    if (users.find(user => user.email === email)) {
+      return res.status(400).json({ message: 'Cet e-mail est déjà utilisé.' });
+    }
+
+    // Ajouter l'utilisateur à la "base de données"
+    users.push({ email, password, prenom, nom, telephone, gouvernorat });
+
+    // Répondre avec un message de succès
+    res.status(200).json({ message: 'Inscription réussie !' });
+  } catch (error) {
+    console.error('Erreur :', error);
+    res.status(500).json({ message: 'Erreur interne du serveur.' });
+  }
+});
+
+    // Insérer l'utilisateur dans la base de données
+    const query =
+      "INSERT INTO utilisateur (nom, prenom, email, mot_de_passe, numero_telephone, role_id, etat, etat_email, code_email, gouvernorat) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    const values = [nom, prenom, email, hashedPassword, telephone, 3, 1, 0, confirmationCode, gouvernorat];
+
+    db.query(query, values, (err, results) => {
+      if (err) {
+        console.error("Erreur lors de l'inscription:", err);
+        return res.status(500).json({ success: false, message: "Erreur lors de l'inscription" });
+      }
+
+      // Envoyer un e-mail de confirmation
+      const mailOptions = {
+        from: "vipjob-project@itqanlabs.com",
+        to: email,
+        subject: "Confirmation d'inscription - VipJob.tn",
+        text: `Bonjour ${prenom},\n\nVotre code de confirmation est : ${confirmationCode}\n\nMerci de vous inscrire sur VipJob.tn.`,
+      };
+
+      transporter.sendMail(mailOptions, (err, info) => {
+        if (err) {
+          console.error("Erreur lors de l'envoi de l'e-mail:", err);
+          return res.status(500).json({ success: false, message: "Erreur lors de l'envoi de l'e-mail de confirmation" });
+        }
+        console.log("E-mail envoyé:", info.response);
+        res.status(200).json({ success: true, message: "Inscription réussie. Vérifiez votre e-mail pour le code de confirmation." });
+      });
+    });
+  });
+});
+
+// Route pour vérifier le code de confirmation
+app.post("/verify", (req, res) => {
+  const { email, code } = req.body; // Récupérer l'e-mail et le code du formulaire
+
+  // Vérifier si le code correspond à celui dans la base de données
+  db.query(
+    "SELECT * FROM utilisateur WHERE email = ? AND code_email = ?",
+    [email, code],
+    (err, results) => {
+      if (err) {
+        console.error("Erreur lors de la vérification du code:", err);
+        return res.status(500).json({ success: false, message: "Erreur serveur" });
+      }
+      if (results.length === 0) {
+        return res.status(400).json({ success: false, message: "Code de confirmation invalide." });
+      }
+
+      // Si le code est valide, marquer l'utilisateur comme vérifié
+      db.query(
+        "UPDATE utilisateur SET etat_email = 1 WHERE email = ?",
+        [email],
+        (err, results) => {
+          if (err) {
+            console.error("Erreur lors de la mise à jour de l'utilisateur:", err);
+            return res.status(500).json({ success: false, message: "Erreur lors de la vérification" });
+          }
+          res.status(200).json({ success: true, message: "Compte vérifié avec succès !" });
+        }
+      );
+    }
+  );
+});
+
+// Route pour la page d'accueil
 app.get("/", (req, res) => {
-  res.render("home", { title: "VipJob.tn - Trouvez votre emploi idéal" });
+  res.render("home", { title: "Accueil - VipJob.tn" });
 });
 
-app.get("/login", (req, res) => {
-  res.render("login", { title: "Connexion - VipJob.tn" });
-});
-
+// Route pour la page d'inscription
 app.get("/signup", (req, res) => {
   res.render("signup", { title: "Inscription - VipJob.tn" });
 });
 
+// Route pour la page de vérification
+app.get('/verify', (req, res) => {
+  res.render('verify', { title: "Vérification - VipJob.tn" });
+});
+// Route pour la page des offres
 app.get("/offre", (req, res) => {
-  // This should be protected and only accessible after login
-  res.render("offre");
+  res.render("offre", { title: "Offres - VipJob.tn" });
 });
 
+// Route pour la page de profil
 app.get("/profile", (req, res) => {
-  // This should be protected and only accessible after login
-  res.render("profile", { title: "Profil - VipJob.tn", user: { name: "John Doe", email: "john@example.com" } });
+  res.render("profile", { title: "Profil - VipJob.tn" });
 });
 
-app.get("/abonnement", (req, res) => {
-  res.render("abonnement");
+// Route pour la page de connexion
+app.get("/login", (req, res) => {
+  res.render("login", { title: "Connexion - VipJob.tn" });
 });
 
-// Connexion à la base de données MySQL
-const db = mysql.createConnection({
-  host: "localhost",
-  user: "root",
-  password: "",
-  database: "vipjob",
+// Route pour la page "Mot de passe oublié"
+app.get("/forgot-password", (req, res) => {
+  res.render("forgot-password", { title: "Mot de passe oublié - VipJob.tn" });
 });
 
-db.connect((err) => {
-  if (err) {
-    console.error("❌ Erreur de connexion à MySQL :", err);
-    process.exit(1);
-  }
-  console.log("✅ Connecté à MySQL");
+
+
+
+
+// Route pour traiter la soumission du formulaire "Mot de passe oublié"
+app.post("/forgot-password", (req, res) => {
+  const { email } = req.body;
+
+  // Route pour la page des offres
+app.get("/reset-password", (req, res) => {
+  res.render("reset-password", { title: " - VipJob.tn" });
 });
 
+  // Vérifier si l'e-mail existe dans la base de données
+  db.query("SELECT * FROM utilisateur WHERE email = ?", [email], (err, results) => {
+    if (err) {
+      console.error("Erreur lors de la vérification de l'e-mail:", err);
+      return res.status(500).json({ success: false, message: "Erreur serveur" });
+    }
+    if (results.length === 0) {
+      return res.status(400).json({ success: false, message: "Cet e-mail n'est pas enregistré." });
+    }
+
+    // Générer un token de réinitialisation
+    const resetToken = crypto.randomBytes(20).toString("hex");
+
+    // Enregistrer le token dans la base de données
+    db.query(
+      "UPDATE utilisateur SET reset_token = ? WHERE email = ?",
+      [resetToken, email],
+      (err, results) => {
+        if (err) {
+          console.error("Erreur lors de la génération du token:", err);
+          return res.status(500).json({ success: false, message: "Erreur lors de la génération du token" });
+        }
+
+        // Envoyer un e-mail avec le lien de réinitialisation
+        const resetLink = `http://localhost:3001/reset-password?token=${resetToken}`;
+        const mailOptions = {
+          from: "vipjob-project@itqanlabs.com",
+          to: email,
+          subject: "Réinitialisation de mot de passe - VipJob.tn",
+          text: `Bonjour,\n\nPour réinitialiser votre mot de passe, cliquez sur ce lien : ${resetLink}\n\nSi vous n'avez pas demandé cette réinitialisation, ignorez cet e-mail.`,
+        };
+
+        transporter.sendMail(mailOptions, (err, info) => {
+          if (err) {
+            console.error("Erreur lors de l'envoi de l'e-mail:", err);
+            return res.status(500).json({ success: false, message: "Erreur lors de l'envoi de l'e-mail de réinitialisation" });
+          }
+          console.log("E-mail envoyé:", info.response);
+          res.status(200).json({ success: true, message: "Un e-mail de réinitialisation a été envoyé." });
+        });
+      }
+    );
+  });
+});
+
+
+
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
+
+// Simulated database
+const users = [
+  {
+    id: 1,
+    email: 'user@example.com',
+    password: '$2a$10$...', // Hashed password
+    resetToken: '543ebf23fd2b7b7e3cb235673ea06dd81ea8eaf5', // Example token
+  },
+];
+
+// Simuler une base de données (remplacez par votre vraie base de données)
+const user = [
+  { id: 1, email: 'user@example.com', password: '$2a$10$...' } // Mot de passe hashé
+];
+
+
+// Endpoint pour réinitialiser le mot de passe
+app.post('/reset-password', (req, res) => {
+  const { token, password } = req.body;
+
+  // Vérifier si le token est valide
+  db.query('SELECT * FROM utilisateur WHERE reset_token = ?', [token], (err, results) => {
+    if (err) {
+      console.error('Erreur lors de la recherche de l\'utilisateur:', err);
+      return res.status(500).json({ message: 'Erreur serveur' });
+    }
+
+    if (results.length === 0) {
+      return res.status(400).json({ message: 'Token invalide ou expiré.' });
+    }
+
+    const user = results[0];
+
+    // Hacher le nouveau mot de passe
+    const hashedPassword = crypto.createHash('sha256').update(password).digest('hex');
+
+    // Mettre à jour le mot de passe et effacer le token
+    db.query(
+      'UPDATE utilisateur SET mot_de_passe = ?, reset_token = NULL WHERE id = ?',
+      [hashedPassword, user.id],
+      (err, results) => {
+        if (err) {
+          console.error('Erreur lors de la mise à jour du mot de passe:', err);
+          return res.status(500).json({ message: 'Erreur serveur' });
+        }
+        res.json({ message: 'Mot de passe réinitialisé avec succès.' });
+      }
+    );
+  });
+});
+
+
+
+//profil
+
+// Dans votre fichier server.js (Node.js/Express)
+app.get('/profil/:id', (req, res) => {
+  const userId = req.params.id;
+
+  db.query(
+    `SELECT nom, prenom, email, numero_telephone AS telephone, gouvernorat, domaine 
+     FROM utilisateur WHERE id = ?`,
+    [userId],
+    (err, result) => {
+      if (err) return res.status(500).json({ error: err.message });
+      if (result.length === 0) return res.status(404).json({ error: "Utilisateur non trouvé" });
+      
+      res.json(result[0]);
+    }
+  );
+});
 
 // Route POST pour enregistrer un profil
 app.post("/profil/:id", (req, res) => {
@@ -243,6 +608,10 @@ app.post('/abonnement/unsubscribe', (req, res) => {
 });
 
 
+
+
+
+// Démarrer le serveur
 app.listen(port, () => {
-  console.log(`Server running at http://localhost:${port}`);
+  console.log(`Serveur en cours d'exécution sur http://localhost:${port}`);
 });

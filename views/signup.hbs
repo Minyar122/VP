@@ -1,36 +1,237 @@
-   <body class="min-h-screen flex flex-col bg-gradient-to-b from-blue-50 to-white relative">
-  <!-- Éléments d'arrière-plan -->
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Inscription</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/js/all.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  
+  <style>
+    .glass-card {
+      @apply backdrop-blur-lg bg-white/60 shadow-md border border-white/20 transition-all duration-300;
+    }
+    
+    .glass-card-hover {
+      @apply hover:shadow-lg hover:bg-white/80 transition-all duration-300;
+    }
+    
+    .hover-lift {
+      @apply transition-transform duration-300 hover:-translate-y-1;
+    }
+    
+    .hover-glow {
+      @apply transition-all duration-300 hover:shadow-[0_0_15px_rgba(37,99,235,0.5)];
+    }
+    
+    .page-transition {
+      @apply animate-fade-in;
+    }
+    
+    .btn-gradient {
+      @apply bg-gradient-to-r from-blue-600 to-blue-800 hover:from-blue-700 hover:to-blue-900 text-white transition-all duration-300;
+    }
+    
+    .text-gradient {
+      @apply bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent;
+    }
+    
+    .animation-delay-500 {
+      animation-delay: 500ms;
+    }
+    
+    .animation-delay-1000 {
+      animation-delay: 1000ms;
+    }
+    
+    .animation-delay-2000 {
+      animation-delay: 2000ms;
+    }
+  </style>
+</head>
+
+<body class="min-h-screen flex flex-col bg-gradient-to-b from-blue-50 to-white relative">
   <div class="fixed inset-0 overflow-hidden pointer-events-none z-[-1]">
     <div class="animate-pulse-slow absolute top-20 -left-32 w-96 h-96 bg-blue-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20"></div>
     <div class="animate-pulse-slow animation-delay-2000 absolute bottom-20 -right-32 w-96 h-96 bg-blue-300 rounded-full mix-blend-multiply filter blur-3xl opacity-30"></div>
   </div>
-   <div class="min-h-screen flex items-center justify-center bg-gray-100">
-  <div class="bg-white p-8 rounded-lg shadow-md w-96">
-    <h2 class="text-2xl font-bold mb-6 text-center">Inscription</h2>
-    <form action="/signup" method="POST">
-      <div class="mb-4">
-        <label for="name" class="block text-gray-700 font-bold mb-2">Nom complet</label>
-        <input type="text" id="name" name="name" required class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring focus:border-blue-300">
-      </div>
-      <div class="mb-4">
-        <label for="email" class="block text-gray-700 font-bold mb-2">Email</label>
-        <input type="email" id="email" name="email" required class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring focus:border-blue-300">
-      </div>
-      <div class="mb-4">
-        <label for="password" class="block text-gray-700 font-bold mb-2">Mot de passe</label>
-        <input type="password" id="password" name="password" required class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring focus:border-blue-300">
-      </div>
-      <div class="mb-6">
-        <label for="confirm-password" class="block text-gray-700 font-bold mb-2">Confirmer le mot de passe</label>
-        <input type="password" id="confirm-password" name="confirm-password" required class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring focus:border-blue-300">
-      </div>
-      <button type="submit" class="w-full bg-blue-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring">
-        S'inscrire
-      </button>
-    </form>
-    <p class="mt-4 text-center">
-      Déjà un compte ? <a href="/login" class="text-blue-600 hover:underline">Se connecter</a>
-    </p>
-  </div>
-</div>
 
+  <div class="min-h-screen flex items-center justify-center">
+    <div class="bg-white p-8 rounded-lg shadow-md w-full max-w-2xl">
+      <h2 class="text-2xl font-bold mb-6 text-center">Inscription</h2>
+      <form id="signupForm" class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+        <div class="relative">
+          <i class="fas fa-user absolute left-3 top-3 text-gray-400"></i>
+          <input type="text" name="prenom" id="prenom" placeholder="Prénom *" class="pl-10 p-3 border border-gray-300 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-indigo-500" required>
+        </div>
+        <div class="relative">
+          <i class="fas fa-user absolute left-3 top-3 text-gray-400"></i>
+          <input type="text" name="nom" id="nom" placeholder="Nom de famille *" class="pl-10 p-3 border border-gray-300 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-indigo-500" required>
+        </div>
+        <div class="relative">
+          <i class="fas fa-envelope absolute left-3 top-3 text-gray-400"></i>
+          <input type="email" name="email" id="email" placeholder="Votre Email *" class="pl-10 p-3 border border-gray-300 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-indigo-500" required>
+        </div>
+        <div class="relative">
+          <i class="fas fa-phone absolute left-3 top-3 text-gray-400"></i>
+          <input type="text" name="telephone" id="telephone" placeholder="Votre téléphone *" class="pl-10 p-3 border border-gray-300 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-indigo-500" required>
+        </div>
+        <div class="relative">
+          <i class="fas fa-lock absolute left-3 top-3 text-gray-400"></i>
+          <input type="password" name="password" id="password" placeholder="Mot de passe *" class="pl-10 p-3 border border-gray-300 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-indigo-500" required>
+          <i id="togglePassword" class="fas fa-eye-slash absolute right-3 top-3 cursor-pointer text-gray-600" onclick="togglePasswordVisibility('password', 'togglePassword')"></i>
+        </div>
+        <div class="relative">
+          <i class="fas fa-lock absolute left-3 top-3 text-gray-400"></i>
+          <input type="password" name="confirmPassword" id="confirmPassword" placeholder="Confirmer le mot de passe *" class="pl-10 p-3 border border-gray-300 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-indigo-500" required>
+          <i id="toggleConfirmPassword" class="fas fa-eye-slash absolute right-3 top-3 cursor-pointer text-gray-600" onclick="togglePasswordVisibility('confirmPassword', 'toggleConfirmPassword')"></i>
+        </div>
+        <div class="relative">
+          <i class="fas fa-map-marker-alt absolute left-3 top-3 text-gray-400"></i>
+          <select name="gouvernorat" id="gouvernorat" class="pl-10 p-3 border border-gray-300 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-indigo-500" required>
+            <option value="" disabled selected>Choisir un gouvernorat</option>
+            <option value="Tunis">Tunis</option>
+            <option value="Ariana">Ariana</option>
+            <option value="Ben Arous">Ben Arous</option>
+            <option value="Manouba">Manouba</option>
+            <option value="Nabeul">Nabeul</option>
+            <option value="Zaghouan">Zaghouan</option>
+            <option value="Bizerte">Bizerte</option>
+            <option value="Béja">Béja</option>
+            <option value="Jendouba">Jendouba</option>
+            <option value="Le Kef">Le Kef</option>
+            <option value="Siliana">Siliana</option>
+            <option value="Kairouan">Kairouan</option>
+            <option value="Kasserine">Kasserine</option>
+            <option value="Sidi Bouzid">Sidi Bouzid</option>
+            <option value="Sousse">Sousse</option>
+            <option value="Monastir">Monastir</option>
+            <option value="Mahdia">Mahdia</option>
+            <option value="Sfax">Sfax</option>
+            <option value="Gabès">Gabès</option>
+            <option value="Médenine">Médenine</option>
+            <option value="Tataouine">Tataouine</option>
+            <option value="Gafsa">Gafsa</option>
+            <option value="Tozeur">Tozeur</option>
+            <option value="Kébili">Kébili</option>
+          </select>
+        </div>
+        <button type="submit" class="col-span-full bg-blue-600 text-white px-6 py-3 rounded-full font-bold w-full mt-6 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500">S'inscrire</button>
+      </form>
+      <p class="mt-4 text-center">
+        Déjà un compte ? <a href="/login" class="text-blue-600 hover:underline">Se connecter</a>
+      </p>
+    </div>
+  </div>
+
+  <script>
+    // Fonction pour basculer la visibilité du mot de passe
+    function togglePasswordVisibility(inputId, iconId) {
+      const passwordInput = document.getElementById(inputId);
+      const icon = document.getElementById(iconId);
+
+      if (passwordInput.type === "password") {
+        passwordInput.type = "text";
+        icon.classList.remove("fa-eye-slash");
+        icon.classList.add("fa-eye");
+      } else {
+        passwordInput.type = "password";
+        icon.classList.remove("fa-eye");
+        icon.classList.add("fa-eye-slash");
+      }
+    }
+
+    // Fonction pour valider le formulaire
+    function validateForm() {
+      const password = document.getElementById('password').value;
+      const confirmPassword = document.getElementById('confirmPassword').value;
+
+      if (password.length < 8) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Erreur',
+          text: 'Le mot de passe doit contenir au moins 8 caractères.',
+        });
+        return false;
+      }
+
+      if (password !== confirmPassword) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Erreur',
+          text: 'Les mots de passe ne correspondent pas.',
+        });
+        return false;
+      }
+
+      const inputs = document.querySelectorAll('#signupForm input, #signupForm select');
+      for (const input of inputs) {
+        if (!input.value.trim()) {
+          Swal.fire({
+            icon: 'error',
+            title: 'Erreur',
+            text: 'Veuillez remplir tous les champs obligatoires.',
+          });
+          return false;
+        }
+      }
+
+      return true;
+    }
+
+    // Gestion de la soumission du formulaire
+    document.getElementById('signupForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      if (!validateForm()) {
+        return;
+      }
+
+      const formData = new FormData(e.target);
+      const data = Object.fromEntries(formData.entries());
+
+      try {
+        // Simuler une requête POST vers le serveur
+        const response = await fetch('/signup', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(data),
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+          Swal.fire({
+            icon: 'success',
+            title: 'Inscription réussie !',
+            text: 'Vérifiez votre e-mail pour le code de confirmation.',
+            confirmButtonText: 'OK',
+          }).then(() => {
+            // Redirection vers la page de vérification
+           window.location.href = '/verify'; //
+          });
+        } else {
+          Swal.fire({
+            icon: 'error',
+            title: 'Erreur',
+            text: result.message || 'Une erreur est survenue lors de l\'inscription.',
+          });
+        }
+      } catch (error) {
+        console.error('Erreur:', error);
+        Swal.fire({
+          icon: 'error',
+          title: 'Erreur',
+          text: 'Erreur de connexion au serveur.',
+        });
+      }
+    });
+  </script>
+</body>
+
+</html>

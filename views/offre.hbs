@@ -142,11 +142,11 @@
       class="fixed inset-0 z-40 glass-card flex flex-col pt-20 pb-6 px-6 md:hidden"
     >
       <nav class="flex flex-col gap-6 items-center">
-        <a href="/jobs" @click="mobileMenuOpen = false" class="flex items-center py-2 transition-all duration-300 text-primary/70 hover:text-primary">
+        <a href="/offre" @click="mobileMenuOpen = false" class="flex items-center py-2 transition-all duration-300 text-primary/70 hover:text-primary">
           <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="14" x="2" y="7" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
           Offres de travail
         </a>
-        <a href="/subscription" @click="mobileMenuOpen = false" class="flex items-center py-2 transition-all duration-300 text-primary/70 hover:text-primary">
+        <a href="/abonnement" @click="mobileMenuOpen = false" class="flex items-center py-2 transition-all duration-300 text-primary/70 hover:text-primary">
           <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="14" x="2" y="5" rx="2" ry="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg>
           Abonnement
         </a>
@@ -156,26 +156,23 @@
         </a>
         <div class="flex items-center gap-4 mt-4 relative"> <!-- Ajout de relative ici -->
   <!-- Notification -->
-  <button id="notification-btn" class="relative p-2 rounded-full hover:bg-secondary transition-colors">
-    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/>
-      <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/>
-    </svg>
-    <span class="absolute top-1 right-1 h-2 w-2 rounded-full bg-red-500" id="notification-badge"></span>
-  </button>
+  <div id="notification-modal" class="hidden fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+    <div class="bg-white p-4 rounded-lg shadow-lg w-80">
+        <h2 class="text-lg font-semibold">Notifications</h2>
+        <p>Vous avez 3 nouvelles notifications.</p>
+        <button id="close-modal" class="mt-3 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-700">Fermer</button>
+    </div>
+</div>
 
   <!-- Avatar -->
   <div class="h-10 w-10 rounded-full overflow-hidden cursor-pointer" id="profile-btn">
-    <img src="https://images.unsplash.com/photo-1581091226825-a6a2a5aee158" alt="Photo de profil" class="h-full w-full object-cover" />
+    <img src="https://images.unsplash.com/photo-1581091226825-a6a2a5aee158" alt="Photo de profil"class="profile-icon" 
+    class="h-full w-full object-cover" />
+    
   </div>
 
   <!-- Menu déroulant EXTERIEUR au conteneur de l'avatar -->
-  <div id="profile-menu" class="absolute top-12 right-0 mt-2 bg-white shadow-lg rounded-md hidden w-48 z-50">
-    <ul class="py-2">
-      <li><a href="/profile" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Profil</a></li>
-      <li><a href="/logout" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Déconnecter</a></li>
-    </ul>
-  </div>
+ 
 </div>
 
 <script>
@@ -190,27 +187,29 @@
       profileMenu.classList.toggle('hidden');
     });
 
-    // Gestion des notifications
+    document.addEventListener('DOMContentLoaded', function () {
     const notificationBtn = document.getElementById('notification-btn');
     const notificationModal = document.getElementById('notification-modal');
-    const closeNotification = document.getElementById('close-notification');
+    const closeModalBtn = document.getElementById('close-modal');
 
-    notificationBtn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      notificationModal.classList.remove('hidden');
+    notificationBtn.addEventListener('click', function () {
+        notificationModal.classList.remove('hidden');
     });
 
-    closeNotification.addEventListener('click', () => {
-      notificationModal.classList.add('hidden');
+    closeModalBtn.addEventListener('click', function () {
+        notificationModal.classList.add('hidden');
     });
+
+    // Fermer le modal si on clique en dehors
+    notificationModal.addEventListener('click', function (event) {
+        if (event.target === notificationModal) {
+            notificationModal.classList.add('hidden');
+        }
+    });
+});
 
     // Fermeture au clic externe
-    document.addEventListener('click', (e) => {
-      if (!profileBtn.contains(e.target)) profileMenu.classList.add('hidden');
-      if (!notificationModal.contains(e.target) && !notificationBtn.contains(e.target)) {
-        notificationModal.classList.add('hidden');
-      }
-    });
+    
   });
 </script>
 
