@@ -1,3 +1,6 @@
+// ______________________________________________email : chedi@yanyi.de
+
+
 var userDescription = "banjour je swis un hom"
 
 fetch("https://openrouter.ai/api/v1/chat/completions", {
