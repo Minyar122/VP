@@ -2,11 +2,12 @@
 <html lang="fr">
 
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>VipJob.tn - Offres d'emploi</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <style>
     .carousel-container {
       transition: transform 0.7s ease-in-out;
@@ -24,105 +25,78 @@
 
   <!-- Hero Section -->
   <section class="relative w-full h-[60vh] bg-blue-500 overflow-hidden">
-  <!-- Carousel container -->
-  <div id="carousel" class="carousel-container absolute inset-0 flex">
-    <div class="carousel-item">
-      <div class="h-full bg-cover bg-center" style="background-image: url('https://img.freepik.com/free-photo/person-presenting-their-job-resignation_23-2149445123.jpg?ga=GA1.1.1280898021.1716310753&semt=ais_hybrid&w=740')">
+    <!-- Carousel container -->
+    <div id="carousel" class="carousel-container absolute inset-0 flex">
+      <div class="carousel-item">
+        <div class="h-full bg-cover bg-center" style="background-image: url('https://img.freepik.com/free-photo/person-presenting-their-job-resignation_23-2149445123.jpg?ga=GA1.1.1280898021.1716310753&semt=ais_hybrid&w=740')">
+        </div>
+      </div>
+      <div class="carousel-item">
+        <div class="h-full bg-cover bg-center" style="background-image: url('https://img.freepik.com/free-photo/business-job-interview-concept_1421-77.jpg?t=st=1745245997~exp=1745249597~hmac=410dd7e8bba926a327d6a2f79b18b29953a66740bcc07594cdb00b0dfc6c584a&w=1380')">
+        </div>
+      </div>
+      <div class="carousel-item">
+        <div class="h-full bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1552664730-d307ca884978?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80')">
+        </div>
       </div>
     </div>
-    <div class="carousel-item">
-      <div class="h-full bg-cover bg-center" style="background-image: url('https://img.freepik.com/free-photo/business-job-interview-concept_1421-77.jpg?t=st=1745245997~exp=1745249597~hmac=410dd7e8bba926a327d6a2f79b18b29953a66740bcc07594cdb00b0dfc6c584a&w=1380')">
-      </div>
-    </div>
-    <div class="carousel-item">
-      <div class="h-full bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1552664730-d307ca884978?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80')">
-      </div>
-    </div>
-  </div>
 
-  <!-- Navigation -->
-  <div class="absolute top-1/2 left-0 right-0 flex justify-between px-6">
-    <button id="prev" class="text-white text-3xl bg-black bg-opacity-50 p-2 rounded-full hover:bg-opacity-70">
-      <i class="fas fa-chevron-left"></i>
-    </button>
-    <button id="next" class="text-white text-3xl bg-black bg-opacity-50 p-2 rounded-full hover:bg-opacity-70">
-      <i class="fas fa-chevron-right"></i>
-    </button>
-  </div>
-  <!-- Recherche Avancée -->
-<div class="absolute bottom-[-5%] left-1/2 transform -translate-x-1/2 w-[95%] md:w-[80%] lg:w-[70%] bg-gradient-to-r from-white/30 via-white/40 to-white/30 backdrop-blur-md rounded-xl shadow-2xl p-6 md:p-8 border border-gray-200 z-10 transition-all duration-500">
-    <h2 class="text-2xl font-bold mb-4 text-blue-900"><i class="fas fa-sliders-h mr-2"></i>Recherche Avancée</h2>
-    <form id="advanced-search-form" class="grid grid-cols-1 md:grid-cols-3 gap-4">
-      <input type="text" id="search-titre" placeholder="Titre de l'emploi" class="p-2 border rounded-md">
-      <select id="search-domaine" class="p-2 border rounded-md">
-        <option value="">Tous les domaines</option>
-        <option value="informatique">Informatique et Développement</option>
-        <option value="cybersecurite">Cybersécurité</option>
-        <option value="intelligence_artificielle">Intelligence Artificielle</option>
-        <option value="telecom">Télécoms et Réseaux</option>
-        <option value="electronique">Électronique</option>
-        <option value="sante">Médecine</option>
-        <option value="paramedical">Paramédical</option>
-        <option value="education">Enseignement</option>
-        <option value="recherche">Recherche</option>
-        <option value="industrie">Industrie</option>
-        <option value="automobile">Automobile</option>
-        <option value="commerce">Commerce</option>
-        <option value="banque">Banque</option>
-        <option value="tourisme">Tourisme</option>
-        <option value="restauration">Restauration</option>
-        <option value="transport">Transport</option>
-        <option value="btp">BTP</option>
-        <option value="agriculture">Agriculture</option>
-        <option value="energie">Énergie</option>
-        <option value="juridique">Droit</option>
-        <option value="marketing">Marketing</option>
-        <option value="gestion">Gestion</option>
-        <option value="evenementiel">Événementiel</option>
-        <option value="audiovisuel">Audiovisuel</option>
-        <option value="art">Arts</option>
-        <option value="sport">Sport</option>
-        <option value="social">Social</option>
-        <option value="securite">Sécurité</option>
-      </select>
-      <select id="search-type" class="p-2 border rounded-md">
-        <option value="">Tous types</option>
-        <option value="CDI">CDI</option>
-        <option value="CDD">CDD</option>
-      </select>
-      <button type="submit" class="col-span-1 md:col-span-3 w-full md:w-auto bg-blue-900 text-white font-semibold px-4 py-2 rounded-md hover:bg-blue-700 transition">
-        Rechercher
+    <!-- Navigation -->
+    <div class="absolute top-1/2 left-0 right-0 flex justify-between px-6">
+      <button id="prev" class="text-white text-3xl bg-black bg-opacity-50 p-2 rounded-full hover:bg-opacity-70">
+        <i class="fas fa-chevron-left"></i>
       </button>
-    </form>
-  </div>
-</section>
-<!-- Domain Filter -->
-      <div class="max-w-7xl mx-auto px-4 sm:px-8">
-  <div class="w-full mb-6 relative h-10"> <!-- Conteneur relatif avec hauteur fixe -->
-<div class="absolute right-[calc(93%+10px)]">
-  
+      <button id="next" class="text-white text-3xl bg-black bg-opacity-50 p-2 rounded-full hover:bg-opacity-70">
+        <i class="fas fa-chevron-right"></i>
+      </button>
+    </div>
+
+    <!-- Recherche Avancée -->
+    <div class="absolute bottom-[-5%] left-1/2 transform -translate-x-1/2 w-[95%] md:w-[80%] lg:w-[70%] bg-gradient-to-r from-white/30 via-white/40 to-white/30 backdrop-blur-md rounded-xl shadow-2xl p-6 md:p-8 border border-gray-200 z-10 transition-all duration-500">
+      <h2 class="text-2xl font-bold mb-4 text-blue-900"><i class="fas fa-sliders-h mr-2"></i>Recherche Avancée</h2>
+      <form id="advanced-search-form" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <input type="text" id="search-titre" placeholder="Titre de l'emploi" class="p-2 border rounded-md">
+        <select id="search-domaine" class="p-2 border rounded-md">
+          <!-- Options du domaine -->
+        </select>
+        <select id="search-type" class="p-2 border rounded-md">
+          <option value="">Tous types</option>
+          <option value="CDI">CDI</option>
+          <option value="CDD">CDD</option>
+        </select>
+        <button type="submit" class="col-span-1 md:col-span-3 w-full md:w-auto bg-blue-900 text-white font-semibold px-4 py-2 rounded-md hover:bg-blue-700 transition">
+          Rechercher
+        </button>
+      </form>
+    </div>
+  </section>
+
+  <!-- Domain Filter -->
+  <div class="max-w-7xl mx-auto px-4 sm:px-8">
+    <div class="w-full mb-6 relative h-10">
+      <div class="absolute right-[calc(93%+10px)]">
         <select id="domain-filter" class="p-2 border rounded-md shadow-sm text-gray-700 focus:ring focus:ring-blue-200">
-          <i class="fas fa-search"></i>
-        <option value="all">Toutes les offres</option>
-        <option value="my-domain">Offres de mon domaine</option>
-      </select>
+          <option value="all">Toutes les offres</option>
+          <option value="my-domain">Offres de mon domaine</option>
+        </select>
+      </div>
     </div>
   </div>
-</div>
-  <!-- Main Content -->
-  <main class="flex-grow  pt-12 pb-16 px-4 sm:px-8">
-    <div class="max-w-7xl mx-auto">
 
+  <!-- Main Content -->
+  <main class="flex-grow pt-12 pb-16 px-4 sm:px-8">
+    <div class="max-w-7xl mx-auto">
       <!-- Title -->
       <div class="text-center mb-5">
         <h1 class="text-4xl md:text-5xl font-extrabold text-blue-900 mb-4">Offres d'emploi</h1>
         <p class="text-gray-600 text-lg">Découvrez les meilleures opportunités professionnelles en Tunisie</p>
       </div>
+      
       <!-- Résultats des offres -->
       <div id="offres-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
       
       <!-- Pagination -->
-      <div class="flex justify-between items-center mt-4">
+      <div class="flex justify-between items-center mt-8">
         <button id="prevPage" class="px-4 py-2 bg-gray-300 text-gray-700 rounded disabled:opacity-50">Précédent</button>
         <span id="pageInfo" class="text-gray-600"></span>
         <button id="nextPage" class="px-4 py-2 bg-gray-300 text-gray-700 rounded disabled:opacity-50">Suivant</button>
@@ -136,7 +110,7 @@
     let allOffres = [];
     let currentOffres = [];
     let currentPage = 1;
-    const itemsPerPage =6;
+    const itemsPerPage = 6;
 
     // Carousel Logic
     let carouselIndex = 0;
@@ -162,77 +136,201 @@
     document.getElementById('next').addEventListener('click', nextCarouselItem);
     document.getElementById('prev').addEventListener('click', prevCarouselItem);
 
-    // Offres Logic
+    // Formatage de la date
     function formatDate(dateString) {
-      return dateString ? new Date(dateString).toLocaleDateString('fr-FR') : 'N/A';
+      if (!dateString) return 'N/A';
+      const date = new Date(dateString);
+      return date.toLocaleDateString('fr-FR');
     }
 
-    async function fetchOffres() {
+    // Gestion des favoris
+    async function toggleFavorite(offreId) {
+      const userId = localStorage.getItem("userId");
+      const icon = document.getElementById(`fav-icon-${offreId}`);
+      const isFavorite = icon.classList.contains("fa-solid");
+
       try {
-        const response = await fetch('/display-offres');
-        const data = await response.json();
-        if (data.success) {
-          allOffres = data.offres;
-          currentOffres = [...allOffres];
-          displayOffres();
+        const url = "/favorites";
+        const method = isFavorite ? "DELETE" : "POST";
+        const response = await fetch(url, {
+          method,
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ user_id: userId, offre_id: offreId })
+        });
+
+        if (response.ok) {
+          icon.classList.toggle("fa-regular");
+          icon.classList.toggle("fa-solid");
+          icon.classList.toggle("text-gray-400");
+          icon.classList.toggle("text-red-500");
         }
       } catch (error) {
         console.error("Erreur:", error);
-        document.getElementById('offres-container').innerHTML = 
-          `<p class="text-red-500">Erreur de chargement des offres</p>`;
       }
     }
 
-    function displayOffres() {
+    // Postulation
+    async function postuler(offreId) {
+      const utilisateurId = localStorage.getItem("userId");
+      
+      Swal.fire({
+        title: 'Postulation en cours...',
+        allowOutsideClick: false,
+        didOpen: () => Swal.showLoading()
+      });
+
+      try {
+        const response = await fetch("/postuler", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ utilisateur_id: utilisateurId, offre_id: offreId })
+        });
+        
+        const data = await response.json();
+        Swal.close();
+        
+        if (data.success) {
+          Swal.fire('Succès!', data.message, 'success');
+        } else {
+          Swal.fire('Erreur', data.message, 'error');
+        }
+      } catch (error) {
+        Swal.close();
+        Swal.fire('Erreur', 'Une erreur est survenue', 'error');
+      }
+    }
+
+    // Chargement des favoris
+    async function loadFavorites(userId) {
+      try {
+        const response = await fetch(`/favorites/${userId}`);
+        const favorites = await response.json();
+        return favorites.map(fav => fav.id);
+      } catch (error) {
+        return [];
+      }
+    }
+
+    // Affichage des offres avec pagination
+    async function displayOffres() {
       const start = (currentPage - 1) * itemsPerPage;
       const end = start + itemsPerPage;
       const paginated = currentOffres.slice(start, end);
-      
-      const html = paginated.map(offre => `
-        <div class="bg-white rounded-lg shadow-md border border-gray-200 hover:shadow-xl transition">
-          <div class="p-5">
-            <div class="flex justify-between items-center mb-4">
-              <h3 class="text-xl font-semibold text-gray-800 flex items-center gap-2">
-                <svg class="h-8 w-8 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m2 0a2 2 0 002-2V7a2 2 0 00-2-2h-2.586a1 1 0 01-.707-.293l-1.414-1.414A1 1 0 0012.586 3H11.414a1 1 0 00-.707.293L9.293 4.707A1 1 0 018.586 5H6a2 2 0 00-2 2v3a2 2 0 002 2m12 0v4a2 2 0 01-2 2H6a2 2 0 01-2-2v-4" />
-                </svg>
-                ${offre.titre}
-              </h3>
-              <span class="bg-blue-100 text-blue-800 text-sm px-3 py-1 rounded-full">${offre.type}</span>
-            </div>
-            <p class="text-gray-600 mb-4 line-clamp-3">${offre.description}</p>
-            <div class="flex flex-wrap gap-2 text-sm mb-4">
-              <span class="bg-gray-100 px-2 py-1 rounded">
-                <i class="fas fa-briefcase mr-1"></i>Domaine: ${offre.domaine}
-              </span>
-              <span class="bg-gray-100 px-2 py-1 rounded">
-                <i class="fas fa-calendar-alt mr-1"></i>Début: ${formatDate(offre.date_creation)}
-              </span>
-              <span class="bg-red-100 text-red-800 px-2 py-1 rounded">
-                <i class="fas fa-hourglass-end mr-1"></i>Fin: ${formatDate(offre.date_fin)}
-              </span>
-            </div>
-            <div class="text-blue-500 cursor-pointer" onclick="showDetails(${offre.id})">
-              Voir détails
-            </div>
-          </div>
+      const container = document.getElementById('offres-container');
+      container.innerHTML = '';
+
+      const userId = localStorage.getItem("userId");
+      const favoriteOffers = await loadFavorites(userId);
+
+     paginated.forEach(offre => {
+  const isFav = favoriteOffers.includes(offre.id);
+  const heartIconClass = isFav ? 
+    'fa-solid fa-heart text-red-500' : 
+    'fa-regular fa-heart text-gray-400';
+
+  const offreHTML = `
+    <div class="bg-white rounded-lg shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-200 relative">
+      <div class="p-3">
+        <button onclick="toggleFavorite('${offre.id}')" class="absolute top-3 right-3">
+          <i id="fav-icon-${offre.id}" class="${heartIconClass} text-xl"></i>
+        </button>
+
+        <h3 class="text-xl font-semibold text-gray-800 flex items-center gap-2">
+          <svg class="h-8 w-8 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+              d="M9 12h6m2 0a2 2 0 002-2V7a2 2 0 00-2-2h-2.586a1 1 0 01-.707-.293l-1.414-1.414A1 1 0 0012.586 3H11.414a1 1 0 00-.707.293L9.293 4.707A1 1 0 018.586 5H6a2 2 0 00-2 2v3a2 2 0 002 2m12 0v4a2 2 0 01-2 2H6a2 2 0 01-2-2v-4" />
+          </svg>
+          ${offre.titre}
+        </h3>
+
+
+        <p class="text-gray-600 mb-4 line-clamp-3">
+          ${offre.description}
+        </p>
+
+        <div class="flex flex-wrap gap-2 text-sm mb-4">
+          <span class="bg-gray-100 px-2 py-1 rounded">
+            <i class="fas fa-briefcase mr-1"></i>Domaine: ${offre.domaine || "Non spécifié"}
+          </span>
+          <span class="bg-gray-100 px-2 py-1 rounded">
+            <i class="fas fa-calendar-alt mr-1"></i>Début: ${formatDate(offre.date_creation)}
+          </span>
+          <span class="bg-red-100 text-red-800 px-2 py-1 rounded">
+            <i class="fas fa-hourglass-end mr-1"></i>Fin: ${formatDate(offre.date_fin)}
+          </span>
         </div>
-      `).join('');
 
-      document.getElementById('offres-container').innerHTML = html;
-      updatePagination();
-    }
+        <div class="flex justify-between items-center">
+            <button id="postuler-btn-${offre.id}" onclick="postuler('${offre.id}')" class="relative text-gray-700 border p-3 rounded-md hover:bg-gray-100 hover:text-black font-medium">
+              <span class="spinner hidden absolute left-3 top-3 w-4 h-4 border-2 border-t-transparent border-gray-600 rounded-full animate-spin"></span>
+              <span class="btn-text">Postuler</span>
+            </button>
+          </div>
+      </div>
+    </div>
+  `;
 
-    function updatePagination() {
+  container.innerHTML += offreHTML;
+});
+
+
+      // Mise à jour de la pagination
       const totalPages = Math.ceil(currentOffres.length / itemsPerPage);
       document.getElementById('pageInfo').textContent = `Page ${currentPage} sur ${totalPages}`;
       document.getElementById('prevPage').disabled = currentPage === 1;
       document.getElementById('nextPage').disabled = currentPage === totalPages || totalPages === 0;
     }
 
-    // Event Listeners
-    document.addEventListener('DOMContentLoaded', fetchOffres);
+    // Récupération des offres
+    async function fetchOffres() {
+      try {
+        const response = await fetch('/display-offres');
+        const data = await response.json();
 
+        if (data.success) {
+          allOffres = data.offres;
+          currentOffres = [...allOffres];
+          currentPage = 1;
+          displayOffres();
+        }
+      } catch (error) {
+        console.error("Erreur:", error);
+      }
+    }
+
+    // Filtres et recherche
+    document.getElementById('domain-filter').addEventListener('change', (e) => {
+      const storedDomain = localStorage.getItem("domain");
+      if (e.target.value === 'my-domain') {
+        currentOffres = allOffres.filter(offre => offre.domaine === storedDomain);
+      } else {
+        currentOffres = [...allOffres];
+      }
+      currentPage = 1;
+      displayOffres();
+    });
+
+    document.getElementById('advanced-search-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const titre = document.getElementById('search-titre').value;
+      const domaine = document.getElementById('search-domaine').value;
+      const type = document.getElementById('search-type').value;
+
+      try {
+        const response = await fetch(`/search-offre?titre=${titre}&domaine=${domaine}&type_contrat=${type}`);
+        const data = await response.json();
+        
+        if (data.success) {
+          currentOffres = data.offres;
+          currentPage = 1;
+          displayOffres();
+        }
+      } catch (error) {
+        console.error("Erreur:", error);
+      }
+    });
+
+    // Gestionnaires de pagination
     document.getElementById('prevPage').addEventListener('click', () => {
       if (currentPage > 1) {
         currentPage--;
@@ -248,37 +346,8 @@
       }
     });
 
-    document.getElementById('domain-filter').addEventListener('change', (e) => {
-      const domain = e.target.value;
-      currentPage = 1;
-      
-      if (domain === 'my-domain') {
-        const userDomain = localStorage.getItem("domain");
-        currentOffres = allOffres.filter(o => o.domaine === userDomain);
-      } else {
-        currentOffres = [...allOffres];
-      }
-      
-      displayOffres();
-    });
-
-    document.getElementById('advanced-search-form').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      currentPage = 1;
-
-      const titre = document.getElementById('search-titre').value.toLowerCase();
-      const domaine = document.getElementById('search-domaine').value;
-      const type = document.getElementById('search-type').value;
-
-      currentOffres = allOffres.filter(offre => {
-        const matchTitre = offre.titre.toLowerCase().includes(titre);
-        const matchDomaine = domaine ? offre.domaine === domaine : true;
-        const matchType = type ? offre.type === type : true;
-        return matchTitre && matchDomaine && matchType;
-      });
-
-      displayOffres();
-    });
+    // Initialisation
+    document.addEventListener('DOMContentLoaded', fetchOffres);
   </script>
 </body>
 </html>

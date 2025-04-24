@@ -330,7 +330,7 @@ window.addEventListener('DOMContentLoaded', () => {
     console.log(`ID utilisateur récupéré : ${userId}`);
 
     // Récupération des données utilisateur
-    fetch(`http://localhost:3002/profil/${userId}`)
+    fetch(`http://localhost:3003/profil/${userId}`)
         .then(response => {
             if (!response.ok) throw new Error('Erreur réseau');
             return response.json();
@@ -515,7 +515,7 @@ window.addEventListener('DOMContentLoaded', () => {
         improveBioBtn.textContent = 'Génération...';
 
         try {
-          const response = await fetch('http://localhost:3002/generate', {
+          const response = await fetch('http://localhost:3003/generate', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',

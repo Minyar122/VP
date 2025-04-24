@@ -267,24 +267,51 @@
   </div>
 </div>
 <!-- Modal -->
-<div id="smsModal" class="modal" style="display:none; position:fixed; top:10%; left:25%; background:white; border:1px solid #ccc; padding:20px; z-index:1000; width:50%;">
-  <h3>Choisissez les utilisateurs à notifier</h3>
-  <form id="smsForm" onsubmit="sendSMS(event)">
-    <label for="userSelect">Utilisateurs:</label><br/>
-    <select id="userSelect" multiple size="8" style="width:100%; margin-bottom: 15px;">
-      <!-- Options added dynamically -->
-    </select>
-    <input type="hidden" id="modalOffreId" />
-    <input type="hidden" id="modalOffreTitle" />
-    <input type="hidden" id="modalOffreType" />
-    <input type="hidden" id="modalOffreDomaine" />
-    <input type="hidden" id="modalOffreLocation" />
-    <input type="hidden" id="modalOffreNbCandidat" />
-    <input type="hidden" id="modalOffreDateCreation" />
-    <input type="hidden" id="modalOffreDateFin" />
-    <button type="submit">📨 Envoyer SMS</button>
-    <button type="button" onclick="closeModal()">❌ Annuler</button>
-  </form>
+<div id="smsModal" class="modal" style="display:none; position:fixed; top:10%; left:25%;  padding:20px; z-index:1000; width:50%;">
+ <!-- Modal Container -->
+  <div class="bg-white w-full  p-3 rounded-2xl shadow-lg animate-fade-in space-y-6">
+    <!-- Modal Title -->
+    <h2 class="text-xl font-semibold text-gray-800 flex items-center gap-2">
+      📢 Notifier les Utilisateurs
+    </h2>
+
+    <!-- Modal Form -->
+    <form id="smsForm" onsubmit="sendSMS(event)" class="space-y-4">
+      <!-- User Selection -->
+      <div>
+        <label for="userSelect" class="block text-sm font-medium text-gray-700 mb-2">
+          Sélectionnez les utilisateurs :
+        </label>
+        <select id="userSelect" multiple size="8"
+          class="w-full border border-gray-300 rounded-md p-2 text-sm focus:ring-blue-500 focus:border-blue-500">
+          <!-- Options added dynamically -->
+        </select>
+      </div>
+
+      <!-- Hidden Fields -->
+      <input type="hidden" id="modalOffreId" />
+      <input type="hidden" id="modalOffreTitle" />
+      <input type="hidden" id="modalOffreType" />
+      <input type="hidden" id="modalOffreDomaine" />
+      <input type="hidden" id="modalOffreLocation" />
+      <input type="hidden" id="modalOffreNbCandidat" />
+      <input type="hidden" id="modalOffreDateCreation" />
+      <input type="hidden" id="modalOffreDateFin" />
+
+      <!-- Modal Footer -->
+      <div class="flex justify-end space-x-3 pt-4">
+        <button type="button" onclick="closeModal()"
+          class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300">
+          ❌ Annuler
+        </button>
+        <button type="submit"
+          class="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700">
+          📨 Envoyer
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
 </div>
 
 
@@ -608,7 +635,7 @@ function confirmAndSendSMS(offreId, offreTitle, offreDomaine, offreType, offreLo
         data.users.forEach(user => {
           const option = document.createElement("option");
           option.value = user.numero_telephone;
-          option.text = `${user.nom} (${user.numero_telephone})`;
+          option.text = `${user.nom} (${user.numero_telephone}) (${user.email})`;
           userSelect.appendChild(option);
         });
 
@@ -640,6 +667,39 @@ function closeModal() {
 
 
 
+// Function to extract and return user details as an array of objects
+function extractUserDetails() {
+  // Get the selected options
+  const selectedOptions = Array.from(document.getElementById("userSelect").selectedOptions);
+  
+  // Process each selected option and extract necessary details
+  return selectedOptions.map(option => {
+    // Text content of the option (e.g., "ali (+21690130686) (troudichad@gmail.comx)")
+    const text = option.text;
+    
+    // Regex to capture name, phone number, and email
+    const regex = /([a-zA-Z\s]+)\s\((\+?\d+)\)\s\(([^)]+)\)/;
+    const match = text.match(regex);
+    
+    // If match is found, extract the details; otherwise, return null
+    if (match) {
+      const nom = match[1].trim();        // Extracted name
+      const phone = match[2];             // Extracted phone number
+      const email = match[3];             // Extracted email
+      
+      // Return the extracted details as an object
+      return {
+        nom: nom,
+        phone: phone,
+        email: email
+      };
+    }
+    
+    // If regex fails, return null (you can handle this error case as needed)
+    return null;
+  }).filter(user => user !== null);  // Filter out any nulls from failed matches
+}
+
 
 function sendSMS(event) {
   event.preventDefault(); // Prevent form submission (page reload)
@@ -647,7 +707,13 @@ function sendSMS(event) {
   // Log the start of the SMS sending process
   console.log("Début de l'envoi du SMS...");
 
-  const selectedUsers = Array.from(document.getElementById("userSelect").selectedOptions).map(option => option.value);
+// Example: Call the function to extract user details dynamically
+const selectedUsers = extractUserDetails();
+
+// Output the extracted details
+console.log(selectedUsers);
+
+
   const offreId = document.getElementById("modalOffreId").value;
   const offreTitle = document.getElementById("modalOffreTitle").value.trim(); // Ensure there's no leading/trailing whitespace
   const offreDomaine = document.getElementById("modalOffreDomaine").value.trim();
@@ -777,6 +843,28 @@ function deleteOffre(id) {
 }
 
     fetchOffres();
+  </script>
+</script>
+
+   <script>
+    const socket = new WebSocket('ws://localhost:3003');
+
+    socket.onopen = () => {
+      console.log('🟢 Connected');
+      socket.send('Hello Server!');
+    };
+
+    socket.onmessage = (event) => {
+      console.log('📨 Message from server:', event.data);
+    };
+
+    socket.onerror = (error) => {
+      console.error('❌ WebSocket error:', error);
+    };
+
+    socket.onclose = () => {
+      console.log('🔴 Disconnected');
+    };
   </script>
 
 </body>

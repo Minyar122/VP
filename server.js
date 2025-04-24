@@ -9,16 +9,15 @@ const session = require("express-session"); // Pour gérer les sessions
 const { engine } = require("express-handlebars");
 const scrapeTanitJobs = require("./scrape-tanitjobs");
 const twilio = require('twilio');
-
-const jsPDF = require('jspdf');
-const { autoTable } = require('jspdf-autotable');
 const PDFDocument = require('pdfkit');
 const multer = require('multer');
 const { format, addMonths } = require('date-fns');
 require('dotenv').config();
 const cors = require('cors');
 const app = express();
-const port = 3002;
+const port = 3003;
+
+const clients = []; // store connected clients
 
 // Configuration de Handlebars
 // app.engine("hbs", exphbs.engine({ extname: ".hbs" }));
@@ -38,6 +37,7 @@ app.set("view engine", "hbs");
 app.set("views", path.join(__dirname, "views")); // Assurez-vous que ce chemin est correct
 
 app.use(express.static('public'));
+app.use(cors());
 
 // Configuration de la base de données
 const db = mysql.createConnection({
@@ -93,6 +93,11 @@ transporter.verify((error, success) => {
   }
 });
 
+const twilioClient = twilio(
+  process.env.TWILIO_ACCOUNT_SID,
+  process.env.TWILIO_AUTH_TOKEN
+);
+
 // Route pour gérer la connexion
 app.post("/login", (req, res) => {
   const { email, password } = req.body;
@@ -132,7 +137,7 @@ app.get("/profile", (req, res) => {
     return res.redirect("/login"); // Rediriger vers la page de connexion si l'utilisateur n'est pas connecté
   }
   app.get("/abonnement", (req, res) => {
-    res.render("abonnement");
+    res.render("user/abonnement");
   });
   // Afficher la page de tableau de bord
   res.render("user/profile", { title: "Tableau de bord - VipJob.tn", user: req.session.user });
@@ -150,16 +155,9 @@ app.get("/logout", (req, res) => {
   });
 });
 
-
-
 // Route pour gérer l'inscription
 app.post("/signup", (req, res) => {
   const { prenom, nom, email, telephone, password, confirmPassword, gouvernorat } = req.body;
-
-
-
-
-
 
   // Vérifier que les mots de passe correspondent
   if (password !== confirmPassword) {
@@ -186,37 +184,6 @@ app.post("/signup", (req, res) => {
 
     // Hacher le mot de passe (pour la sécurité)
     const hashedPassword = crypto.createHash("sha256").update(password).digest("hex");
-
-
-
-
-
-    
-// Route pour l'inscription
-app.post('/signup', (req, res) => {
-  try {
-    const { email, password, prenom, nom, telephone, gouvernorat } = req.body;
-
-    // Vérifier que tous les champs sont présents
-    if (!email || !password || !prenom || !nom || !telephone || !gouvernorat) {
-      return res.status(400).json({ message: 'Tous les champs sont obligatoires.' });
-    }
-
-    // Vérifier si l'utilisateur existe déjà
-    if (users.find(user => user.email === email)) {
-      return res.status(400).json({ message: 'Cet e-mail est déjà utilisé.' });
-    }
-
-    // Ajouter l'utilisateur à la "base de données"
-    users.push({ email, password, prenom, nom, telephone, gouvernorat });
-
-    // Répondre avec un message de succès
-    res.status(200).json({ message: 'Inscription réussie !' });
-  } catch (error) {
-    console.error('Erreur :', error);
-    res.status(500).json({ message: 'Erreur interne du serveur.' });
-  }
-});
 
     // Insérer l'utilisateur dans la base de données
     const query =
@@ -286,6 +253,10 @@ app.post("/verify", (req, res) => {
 app.get("/", (req, res) => {
   res.render("user/home", { title: "Accueil - VipJob.tn" });
 });
+app.get("/jobs", (req, res) => {
+  res.render("user/jobs", { title: "Jobs - VipJob.tn" });
+});
+
 
 // Route pour la page d'inscription
 app.get("/signup", (req, res) => {
@@ -300,21 +271,11 @@ app.get('/verify', (req, res) => {
 app.get("/offre", (req, res) => {
   res.render("user/offre", { title: "Offres - VipJob.tn" });
 });
-app.get("/jobs", (req, res) => {
-  res.render("user/jobs", { title: "Jobs - VipJob.tn" });
-});
 app.get("/users", (req, res) => {
   res.render("admin/users", { title: "Offres - VipJob.tn" });
 });
 app.get("/offres", (req, res) => {
   res.render("admin/offres", { title: "Offres - VipJob.tn" });
-});
-
-app.get("/gestion_sms", (req, res) => {
-  res.render("admin/gestion_sms", { title: "gestion_sms- VipJob.tn" });
-});
-app.get("/sms", (req, res) => {
-  res.render("admin/sms", { title: "sms - VipJob.tn" });
 });
 
 app.get("/index", (req, res) => {
@@ -330,9 +291,6 @@ app.get('/abonnement', (req, res) => {
   res.render("user/abonnement",{ title: "abonnement - VipJob.tn" });
 });
 
-app.get('/contact', (req, res) => {
-  res.render("user/contact",{ title: "contact - VipJob.tn" });
-});
 // Route pour la page de connexion
 app.get("/login", (req, res) => {
   res.render("user/login", { title: "Connexion - VipJob.tn" });
@@ -342,14 +300,10 @@ app.get("/login", (req, res) => {
 app.get("/forgot-password", (req, res) => {
   res.render("user/forgot-password", { title: "Mot de passe oublié - VipJob.tn" });
 });
+
 // Route pour traiter la soumission du formulaire "Mot de passe oublié"
 app.post("/forgot-password", (req, res) => {
   const { email } = req.body;
-
-  // Route pour la page des offres
-app.get("/reset-password", (req, res) => {
-  res.render("user/reset-password", { title: " - VipJob.tn" });
-});
 
   // Vérifier si l'e-mail existe dans la base de données
   db.query("SELECT * FROM utilisateur WHERE email = ?", [email], (err, results) => {
@@ -390,18 +344,12 @@ app.get("/reset-password", (req, res) => {
           }
           console.log("E-mail envoyé:", info.response);
 
-
-
           res.render('success-alert');
-
-      
         });
       }
     );
   });
 });
-
-
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -420,7 +368,6 @@ const users = [
 const user = [
   { id: 1, email: 'user@example.com', password: '$2a$10$...' } // Mot de passe hashé
 ];
-
 
 // Endpoint pour réinitialiser le mot de passe
 app.post('/reset-password', (req, res) => {
@@ -457,8 +404,6 @@ app.post('/reset-password', (req, res) => {
   });
 });
 
-
-
 //profil
 
 // Dans votre fichier server.js (Node.js/Express)
@@ -481,7 +426,7 @@ app.get('/profil/:id', (req, res) => {
 // Route POST pour enregistrer un profil
 app.post("/profil/:id", (req, res) => {
   let userId = req.params.id;
-  
+
   // Générer un ID si c'est un nouvel utilisateur
   if (userId === "nouvel_utilisateur") {
     userId = generateUniqueUserId(); // Fonction à créer pour générer un ID unique
@@ -515,13 +460,17 @@ app.post("/profil/:id", (req, res) => {
       return res.status(500).json({ error: "Erreur base de données", details: err.sqlMessage });
     }
 
-    res.json({ success: true, message: "Profil mis à jour ou créé avec succès", userId });
+    // Return the updated domain in the response
+    res.json({ 
+      success: true, 
+      message: "Profil mis à jour ou créé avec succès", 
+      userId,
+      domaine // Include the domain in the response
+    });
   });
 });
 
-
 // Nouvelle route pour générer le PDF
-
 const upload = multer({ dest: 'uploads/' });
 
 
@@ -608,12 +557,10 @@ doc.fontSize(16).text(`${data.domaine}`, { align: 'center' });
   }
 });
 
-
-
 // Route pour s'abonner
 app.post('/abonnement/subscribe', (req, res) => {
   const { duration, price } = req.body;
-  const userId = 1; // Exemple d'id utilisateur, à remplacer selon le contexte de votre application
+  const userId = req.session.user.id;
   const dateDeDebut = new Date();
   const dateDeFin = new Date();
   
@@ -641,7 +588,7 @@ app.post('/abonnement/subscribe', (req, res) => {
 
 // Route pour se désabonner
 app.post('/abonnement/unsubscribe', (req, res) => {
-  const userId = 1; // Exemple d'id utilisateur, à remplacer selon le contexte de votre application
+  const userId = req.session.user.id;
 
   // Supprimer l'abonnement de l'utilisateur
   const query = 'DELETE FROM abonnement WHERE id_utilisateur = ?';
@@ -653,8 +600,6 @@ app.post('/abonnement/unsubscribe', (req, res) => {
     res.status(200).json({ success: true, message: 'Désabonnement réussi' });
   });
 });
-
-
 
 // Fonction de hachage du mot de passe avec `crypto`
 const hashPassword = (password) => {
@@ -705,8 +650,6 @@ app.post('/create-user', (req, res) => {
   });
 });
 
-
-
 // Function to delete a user
 const deleteUser = (email, callback) => {
   const query = "DELETE FROM utilisateur WHERE email = ?";
@@ -718,8 +661,6 @@ const displayUser = (callback) => {
   const query = "SELECT * FROM utilisateur";
   db.query(query, callback);
 };
-
-
 
 // Delete user
 app.delete('/delete-user/:id', (req, res) => {
@@ -745,14 +686,9 @@ app.delete('/delete-user/:id', (req, res) => {
   });
 });
 
-
 // Display user
 app.get('/display-user', (req, res) => {
-
-
-
   displayUser( (err, results) => {
-  
     if (results.length === 0) {
       return res.status(404).json({ success: false, message: "Aucun utilisateur trouvé avec cet email." });
     }
@@ -760,9 +696,6 @@ app.get('/display-user', (req, res) => {
     res.status(200).json({ success: true, user: results });
   });
 });
-
-
-
 
 // Function to update user details
 const updateUser = (email, prenom, nom, telephone, gouvernorat, callback) => {
@@ -793,11 +726,9 @@ app.put('/update-user', (req, res) => {
       return res.status(500).json({ success: false, message: "Erreur lors de la mise à jour de l'utilisateur." });
     }
 
-
     res.status(200).json({ success: true, message: "Utilisateur mis à jour avec succès." });
   });
 });
-
 
 app.post('/create-offre', (req, res) => {
   const { titre, description, date_creation, date_fin, domaine, type_contrat, localisation, nb_candidat,status } = req.body;
@@ -822,7 +753,6 @@ app.post('/create-offre', (req, res) => {
     });
   });
 });
-
 
 app.get('/display-offres', (req, res) => {
   const query = "SELECT * FROM offreemploi";
@@ -899,7 +829,6 @@ app.put('/update-offre/:id', (req, res) => {
   });
 });
 
-
 app.delete('/delete-offre/:id', async (req, res) => {
   const { id } = req.params;
 
@@ -922,109 +851,6 @@ app.delete('/delete-offre/:id', async (req, res) => {
     res.status(200).json({ success: true, message: "Offre supprimée avec succès." });
   });
 });
-
-
-
-app.get("/jobs", async (req, res) => {
-  try {
-    const jobs = await scrapeTanitJobs();
-    res.json(jobs); // Send the JSON response
-  } catch (error) {
-    res.status(500).json({ error: error });
-  }
-});
-
-
-app.get("/users-for-sms", (req, res) => {
-  db.query("SELECT id, nom, numero_telephone FROM utilisateur", (err, results) => {
-    if (err) {
-      console.error("Erreur lors de la récupération des utilisateurs:", err);
-      return res.status(500).json({ success: false });
-    }
-    res.json({ success: true, users: results });
-  });
-});
-//app.post("/send-sms", (req, res) => {
- // const {
-   // numbers,
-   // offreTitle
-  //} = req.body;
-
- // if (!Array.isArray(numbers) || numbers.length === 0) {
-   // return res.status(400).json({ success: false, message: "Aucun numéro sélectionné." });
- // }
-
-  //const validNumbers = numbers
-   // .map(num => {
-     // let trimmed = num.trim();
-     // if (!trimmed.startsWith('+')) {
-       // trimmed = '+216' + trimmed;
-      //}
-      //return trimmed;
-    //})
-   // .filter(num => /^\+216\d{8}$/.test(num));
-
-  //if (validNumbers.length === 0) {
-    //return res.status(400).json({ success: false, message: "Numéros invalides." });
-  //}
-
-  //console.log("Numéros valides:", validNumbers);
-  //console.log("Titre brut de l'offre :", offreTitle);
-
-  //const parts = offreTitle.split(',').map(p => p.trim());
-
-  //const offreTitleExtracted = parts[0] || '';
-  //const offreDomaineExtracted = parts[1] || '';
-  //const offreTypeExtracted = parts[2] || '';
-
-  //let offreLocationExtracted = '';
-  //let offreStartDateExtracted = '';
-  //let offreEndDateExtracted = '';
-
-  //if (parts.length >= 4) {
-   // const fourthPart = parts[3]; // e.g. "Tunis 2026-02-01T23:00:00.000Z"
-    //const fourthSplit = fourthPart.split(' ');
-    //if (fourthSplit.length >= 2) {
-     // offreStartDateExtracted = new Date(fourthSplit.pop()).toLocaleDateString('fr-FR');
-     // offreLocationExtracted = fourthSplit.join(' ');
-   // } else {
-     // offreLocationExtracted = fourthPart;
-    //}
- // }
-
- // if (parts.length >= 5) {
-   // offreEndDateExtracted = new Date(parts[4]).toLocaleDateString('fr-FR');
-  //}
-  //const smsBody = 
-    //`📢 Nouvelle offre publiée :\n` +
-    //`🧑‍💻 Titre: ${offreTitleExtracted}\n` +
-    //`📚 Domaine: ${offreDomaineExtracted}\n` +
-    //`📝 Type: ${offreTypeExtracted}\n` +
-   // `📍 Lieu: ${offreLocationExtracted}\n` +
-   // `📅 Début: ${offreStartDateExtracted}\n` +
-   // `📆 Fin: ${offreEndDateExtracted}`;
-
-  //console.log("Contenu du SMS :", smsBody);
-
-  //const sendPromises = validNumbers.map(num =>
-   // twilioClient.messages.create({
-    //  body: smsBody,
-     // from: process.env.TWILIO_PHONE_NUMBER,
-     // to: num
-   // })
- // );
-
- // Promise.all(sendPromises)
-    //.then(() => {
-      //return res.status(200).json({ success: true, message: "📨 SMS envoyés avec succès." });
-    //})
-    //.catch(error => {
-      //console.error("Erreur lors de l'envoi des SMS:", error);
-     // return res.status(500).json({ success: false, message: "❌ Erreur interne du serveur." });
-   // });
-//});
-
-
 
 // Browse Jobs functionality
 app.get("/jobs", async (req, res) => {
@@ -1323,57 +1149,6 @@ app.get('/favorites/:userId', (req, res) => {
     res.status(200).json(results);
   });
 });
-
-//contact
-
-app.post('/submit-contact', async (req, res) => {
-  const { name, email, subject, message } = req.body;
-
-  let transporter = nodemailer.createTransport({
-    host: 'smtp.itqanlabs.com',
-    port: 587,
-    secure: false,
-    auth: {
-      user: 'vipjob-project@itqanlabs.com',
-      pass: 'JNLFWgG0A9QYNq2'
-    },
-    tls: {
-      rejectUnauthorized: false
-    }
-  });
-
-  const mailOptions = {
-    from: `"${name}" <${email}>`,
-    to: 'jmalminyar020@gmail.com',
-    subject: subject,
-    text: `Nom: ${name}\nEmail: ${email}\n\nMessage:\n${message}`
-  };
-
-  try {
-    await transporter.sendMail(mailOptions);
-    res.redirect('/contact?status=success');
-  } catch (error) {
-    console.error('Erreur email :', error);
-    res.redirect('/contact?status=error');
-  }
-});
-
-// Stockage avec nom unique
-const storage = multer.diskStorage({
-  filename: (req, file, cb) => {
-    cb(null, req.user.id + '-' + Date.now() + '.jpg');
-  }
-});
-
-// Route de récupération
-app.get('/my-profile', (req, res) => {
-  const user = db.users.find(u => u.id === req.user.id);
-  res.json({ photoUrl: user.profilePhoto });
-});
-
-
-
-
 
 // Démarrer le serveur
 app.listen(port, () => {
