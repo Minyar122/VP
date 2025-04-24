@@ -7,6 +7,9 @@ const crypto = require("crypto");
 const path = require("path");
 const session = require("express-session"); // Pour gérer les sessions
 const { engine } = require("express-handlebars");
+const scrapeTanitJobs = require("./scrape-tanitjobs");
+const twilio = require('twilio');
+
 const jsPDF = require('jspdf');
 const { autoTable } = require('jspdf-autotable');
 const PDFDocument = require('pdfkit');
@@ -15,12 +18,25 @@ const { format, addMonths } = require('date-fns');
 require('dotenv').config();
 const cors = require('cors');
 const app = express();
-const port = 3001;
+const port = 3002;
 
 // Configuration de Handlebars
-app.engine("hbs", exphbs.engine({ extname: ".hbs" }));
+// app.engine("hbs", exphbs.engine({ extname: ".hbs" }));
+
+app.engine(
+  "hbs",
+  exphbs.engine({
+    extname: "hbs",
+    defaultLayout: "main",
+    layoutsDir: path.join(__dirname, "views", "layouts"),
+    partialsDir: path.join(__dirname, "views", "partials"),
+    helpers: require("handlebars-layouts"), // Assurez-vous que le helper est bien inclus
+  })
+);
+
 app.set("view engine", "hbs");
-app.set("views", path.join(__dirname, "views"));
+app.set("views", path.join(__dirname, "views")); // Assurez-vous que ce chemin est correct
+
 app.use(express.static('public'));
 
 // Configuration de la base de données
@@ -119,7 +135,7 @@ app.get("/profile", (req, res) => {
     res.render("abonnement");
   });
   // Afficher la page de tableau de bord
-  res.render("profile", { title: "Tableau de bord - VipJob.tn", user: req.session.user });
+  res.render("user/profile", { title: "Tableau de bord - VipJob.tn", user: req.session.user });
 });
 
 // Route pour gérer la déconnexion
@@ -133,6 +149,8 @@ app.get("/logout", (req, res) => {
     res.redirect("/login"); // Rediriger vers la page de connexion
   });
 });
+
+
 
 // Route pour gérer l'inscription
 app.post("/signup", (req, res) => {
@@ -266,49 +284,71 @@ app.post("/verify", (req, res) => {
 
 // Route pour la page d'accueil
 app.get("/", (req, res) => {
-  res.render("home", { title: "Accueil - VipJob.tn" });
+  res.render("user/home", { title: "Accueil - VipJob.tn" });
 });
 
 // Route pour la page d'inscription
 app.get("/signup", (req, res) => {
-  res.render("signup", { title: "Inscription - VipJob.tn" });
+  res.render("user/signup", { title: "Inscription - VipJob.tn" });
 });
 
 // Route pour la page de vérification
 app.get('/verify', (req, res) => {
-  res.render('verify', { title: "Vérification - VipJob.tn" });
+  res.render('user/verify', { title: "Vérification - VipJob.tn" });
 });
 // Route pour la page des offres
 app.get("/offre", (req, res) => {
-  res.render("offre", { title: "Offres - VipJob.tn" });
+  res.render("user/offre", { title: "Offres - VipJob.tn" });
+});
+app.get("/jobs", (req, res) => {
+  res.render("user/jobs", { title: "Jobs - VipJob.tn" });
+});
+app.get("/users", (req, res) => {
+  res.render("admin/users", { title: "Offres - VipJob.tn" });
+});
+app.get("/offres", (req, res) => {
+  res.render("admin/offres", { title: "Offres - VipJob.tn" });
+});
+
+app.get("/gestion_sms", (req, res) => {
+  res.render("admin/gestion_sms", { title: "gestion_sms- VipJob.tn" });
+});
+app.get("/sms", (req, res) => {
+  res.render("admin/sms", { title: "sms - VipJob.tn" });
+});
+
+app.get("/index", (req, res) => {
+  res.render("user/index", { title: "Index - VipJob.tn" });
 });
 
 // Route pour la page de profil
 app.get("/profile", (req, res) => {
-  res.render("profile", { title: "Profil - VipJob.tn" });
+  res.render("user/profile", { title: "Profil - VipJob.tn" });
 });
 
+app.get('/abonnement', (req, res) => {
+  res.render("user/abonnement",{ title: "abonnement - VipJob.tn" });
+});
+
+app.get('/contact', (req, res) => {
+  res.render("user/contact",{ title: "contact - VipJob.tn" });
+});
 // Route pour la page de connexion
 app.get("/login", (req, res) => {
-  res.render("login", { title: "Connexion - VipJob.tn" });
+  res.render("user/login", { title: "Connexion - VipJob.tn" });
 });
 
 // Route pour la page "Mot de passe oublié"
 app.get("/forgot-password", (req, res) => {
-  res.render("forgot-password", { title: "Mot de passe oublié - VipJob.tn" });
+  res.render("user/forgot-password", { title: "Mot de passe oublié - VipJob.tn" });
 });
-
-
-
-
-
 // Route pour traiter la soumission du formulaire "Mot de passe oublié"
 app.post("/forgot-password", (req, res) => {
   const { email } = req.body;
 
   // Route pour la page des offres
 app.get("/reset-password", (req, res) => {
-  res.render("reset-password", { title: " - VipJob.tn" });
+  res.render("user/reset-password", { title: " - VipJob.tn" });
 });
 
   // Vérifier si l'e-mail existe dans la base de données
@@ -349,7 +389,12 @@ app.get("/reset-password", (req, res) => {
             return res.status(500).json({ success: false, message: "Erreur lors de l'envoi de l'e-mail de réinitialisation" });
           }
           console.log("E-mail envoyé:", info.response);
-          res.status(200).json({ success: true, message: "Un e-mail de réinitialisation a été envoyé." });
+
+
+
+          res.render('success-alert');
+
+      
         });
       }
     );
@@ -436,7 +481,7 @@ app.get('/profil/:id', (req, res) => {
 // Route POST pour enregistrer un profil
 app.post("/profil/:id", (req, res) => {
   let userId = req.params.id;
-
+  
   // Générer un ID si c'est un nouvel utilisateur
   if (userId === "nouvel_utilisateur") {
     userId = generateUniqueUserId(); // Fonction à créer pour générer un ID unique
@@ -499,8 +544,10 @@ app.post('/api/generate-cv', upload.single('photo'), (req, res) => {
     // 🔵 Bannière Bleue
     doc.rect(0, 0, doc.page.width, 100).fill('#1E88E5'); // Couleur bleu
     doc.fillColor('white').fontSize(24).font('Helvetica-Bold').text(`${data.prenom} ${data.nom}`, { align: 'center' });
-    doc.fontSize(16).text('INFORMATIQUE', { align: 'center' });
-    doc.moveDown(2);
+res.setHeader('Content-Disposition', `attachment; filename="CV_${data.domaine}.pdf"`);
+
+doc.fontSize(16).text(`${data.domaine}`, { align: 'center' });
+        doc.moveDown(2);
     doc.fillColor('black'); // Revenir à la couleur noire
 
     // 🖼️ Ajout de la photo
@@ -533,8 +580,8 @@ app.post('/api/generate-cv', upload.single('photo'), (req, res) => {
     drawText(data.bio?.trim() || 'Pas d’informations disponibles');
 
     // 🎓 Formation
-    drawSectionTitle('Formation');
-    drawText(data.formation || 'Non spécifiée');
+    drawSectionTitle('diplome');
+    drawText(data.diplome || 'Non spécifiée');
 
     // 🏆 Expérience
     drawSectionTitle('Expérience');
@@ -605,6 +652,723 @@ app.post('/abonnement/unsubscribe', (req, res) => {
     }
     res.status(200).json({ success: true, message: 'Désabonnement réussi' });
   });
+});
+
+
+
+// Fonction de hachage du mot de passe avec `crypto`
+const hashPassword = (password) => {
+  return crypto.createHash("sha256").update(password).digest("hex");
+};
+
+app.post('/create-user', (req, res) => {
+  const { prenom, nom, email, password, telephone, gouvernorat } = req.body;
+
+  if (!password) {
+    return res.status(400).json({ success: false, message: 'Password is required' });
+  }
+
+  // Vérifier si l'email existe déjà
+  const checkEmailSql = `SELECT id FROM utilisateur WHERE email = ?`;
+  db.query(checkEmailSql, [email], (err, results) => {
+    if (err) {
+      console.error('Erreur lors de la vérification de l\'email:', err);
+      return res.status(500).json({ success: false, message: 'Internal server error' });
+    }
+
+    if (results.length > 0) {
+      return res.status(400).json({ success: false, message: 'Email already exists' });
+    }
+
+    // Hash du mot de passe
+    const hashedPassword = hashPassword(password);
+
+    // SQL query pour ajouter l'utilisateur
+    const sql = `
+      INSERT INTO utilisateur (prenom, nom, email, mot_de_passe, numero_telephone, gouvernorat)
+      VALUES (?, ?, ?, ?, ?, ?)
+    `;
+    const values = [prenom, nom, email, hashedPassword, telephone, gouvernorat];
+
+    db.query(sql, values, (err, result) => {
+      if (err) {
+        console.error('Erreur lors de l\'insertion de l\'utilisateur:', err);
+        return res.status(500).json({ success: false, message: 'Internal server error' });
+      }
+
+      res.status(201).json({ 
+        success: true, 
+        message: 'User created successfully', 
+        userId: result.insertId
+      });
+    });
+  });
+});
+
+
+
+// Function to delete a user
+const deleteUser = (email, callback) => {
+  const query = "DELETE FROM utilisateur WHERE email = ?";
+  db.query(query, [email], callback);
+};
+
+// Function to display a user by email or user_id
+const displayUser = (callback) => {
+  const query = "SELECT * FROM utilisateur";
+  db.query(query, callback);
+};
+
+
+
+// Delete user
+app.delete('/delete-user/:id', (req, res) => {
+  const { id } = req.params;
+
+  if (!id) {
+    return res.status(400).json({ success: false, message: "L'id est obligatoire." });
+  }
+
+  const query = `DELETE FROM utilisateur WHERE id = ?`;
+
+  db.query(query, [id], (err, results) => {
+    if (err) {
+      console.error("Erreur lors de la suppression de l'utilisateur:", err);
+      return res.status(500).json({ success: false, message: "Erreur lors de la suppression de l'utilisateur." });
+    }
+
+    if (results.affectedRows === 0) {
+      return res.status(404).json({ success: false, message: "Aucun utilisateur trouvé avec cet id user." });
+    }
+
+    res.status(200).json({ success: true, message: "Utilisateur supprimé avec succès." });
+  });
+});
+
+
+// Display user
+app.get('/display-user', (req, res) => {
+
+
+
+  displayUser( (err, results) => {
+  
+    if (results.length === 0) {
+      return res.status(404).json({ success: false, message: "Aucun utilisateur trouvé avec cet email." });
+    }
+
+    res.status(200).json({ success: true, user: results });
+  });
+});
+
+
+
+
+// Function to update user details
+const updateUser = (email, prenom, nom, telephone, gouvernorat, callback) => {
+  const query = `
+    UPDATE utilisateur
+    SET prenom = ?, nom = ?, numero_telephone = ?, gouvernorat = ?
+    WHERE email = ?`;
+  const values = [prenom, nom, telephone, gouvernorat, email];
+
+  db.query(query, values, callback);
+};
+// Update user
+app.put('/update-user', (req, res) => {
+  const { email, prenom, nom, telephone, gouvernorat,id } = req.body;
+
+  if (!email || !prenom || !nom || !telephone || !gouvernorat) {
+    return res.status(400).json({ success: false, message: "Tous les champs sont obligatoires." });
+  }
+
+  const query = `
+    UPDATE utilisateur
+    SET prenom = ?, nom = ?, numero_telephone = ?, gouvernorat = ?, email = ?
+    WHERE id = ?`;
+
+  db.query(query, [prenom, nom, telephone, gouvernorat, email,id], (err, results) => {
+    if (err) {
+      console.error("Erreur lors de la mise à jour de l'utilisateur:", err);
+      return res.status(500).json({ success: false, message: "Erreur lors de la mise à jour de l'utilisateur." });
+    }
+
+
+    res.status(200).json({ success: true, message: "Utilisateur mis à jour avec succès." });
+  });
+});
+
+
+app.post('/create-offre', (req, res) => {
+  const { titre, description, date_creation, date_fin, domaine, type_contrat, localisation, nb_candidat,status } = req.body;
+
+  // SQL query to insert the new offer
+  const sql = `
+    INSERT INTO offreemploi (titre, description, date_creation, date_fin, domaine, type_contrat, localisation, nb_candidat,status)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?,?)
+  `;
+  const values = [titre, description, date_creation, date_fin, domaine, type_contrat, localisation, nb_candidat, status];
+
+  db.query(sql, values, (err, result) => {
+    if (err) {
+      console.error('Erreur lors de l\'insertion de l\'offre:', err);
+      return res.status(500).json({ success: false, message: 'Internal server error' });
+    }
+
+    res.status(201).json({ 
+      success: true, 
+      message: 'Offre created successfully', 
+      offreId: result.insertId 
+    });
+  });
+});
+
+
+app.get('/display-offres', (req, res) => {
+  const query = "SELECT * FROM offreemploi";
+
+  db.query(query, (err, results) => {
+    if (err) {
+      console.error("Erreur lors de la récupération des offres:", err);
+      return res.status(500).json({ success: false, message: "Internal server error" });
+    }
+
+    res.status(200).json({ success: true, offres: results });
+  });
+});
+
+app.get('/search-offre', (req, res) => {
+  let query = "SELECT * FROM offreemploi WHERE 1 = 1";
+  const params = [];
+
+  if (req.query.titre) {
+    query += " AND (titre LIKE ?)";
+    params.push(`%${req.query.titre}%`);
+  }
+
+  if (req.query.domaine) {
+    query += " AND domaine = ?";
+    params.push(req.query.domaine);
+  }
+
+  if (req.query.type_contrat) {
+    query += " AND type_contrat = ?";
+    params.push(req.query.type_contrat);
+  }
+
+  if (req.query.localisation) {  // Fixed incorrect parameter check
+    query += " AND localisation = ?";
+    params.push(req.query.localisation);
+  }
+
+  db.query(query, params, (err, results) => {
+    if (err) {
+      console.error("Erreur lors de la récupération des offres:", err);
+      return res.status(500).json({ success: false, message: "Internal server error" });
+    }
+    res.status(200).json({ success: true, offres: results });
+  });
+});
+
+app.put('/update-offre/:id', (req, res) => {
+  const id = req.params.id;  // Correct access to the id parameter
+  const { titre, description, date_creation, date_fin, domaine, type_contrat, localisation, nb_candidat } = req.body;
+
+  if (!id || !titre || !description || !date_creation || !date_fin || !domaine || !type_contrat || !localisation || !nb_candidat) {
+      return res.status(400).json({ success: false, message: "Tous les champs sont obligatoires." });
+  }
+
+  const query = `
+    UPDATE offreemploi
+    SET titre = ?, description = ?, date_creation = ?, date_fin = ?, domaine = ?, type_contrat = ?, localisation = ?, nb_candidat = ?
+    WHERE id = ?
+  `;
+  const values = [titre, description, date_creation, date_fin, domaine, type_contrat, localisation, nb_candidat, id];
+
+  db.query(query, values, (err, results) => {
+      if (err) {
+          console.error("Erreur lors de la mise à jour de l'offre:", err);
+          return res.status(500).json({ success: false, message: "Erreur lors de la mise à jour de l'offre." });
+      }
+
+      if (results.affectedRows === 0) {
+          return res.status(404).json({ success: false, message: "Aucune offre trouvée avec cet ID." });
+      }
+
+      res.status(200).json({ success: true, message: "Offre mise à jour avec succès." });
+  });
+});
+
+
+app.delete('/delete-offre/:id', async (req, res) => {
+  const { id } = req.params;
+
+  if (!id) {
+    return res.status(400).json({ success: false, message: "L'id de l'offre est obligatoire." });
+  }
+
+  const query = "DELETE FROM offreemploi WHERE id = ?";
+
+  db.query(query, [id], (err, results) => {
+    if (err) {
+      console.error("Erreur lors de la suppression de l'offre:", err);
+      return res.status(500).json({ success: false, message: "Erreur lors de la suppression de l'offre." });
+    }
+
+    if (results.affectedRows === 0) {
+      return res.status(404).json({ success: false, message: "Aucune offre trouvée avec cet id." });
+    }
+
+    res.status(200).json({ success: true, message: "Offre supprimée avec succès." });
+  });
+});
+
+
+
+app.get("/jobs", async (req, res) => {
+  try {
+    const jobs = await scrapeTanitJobs();
+    res.json(jobs); // Send the JSON response
+  } catch (error) {
+    res.status(500).json({ error: error });
+  }
+});
+
+
+app.get("/users-for-sms", (req, res) => {
+  db.query("SELECT id, nom, numero_telephone FROM utilisateur", (err, results) => {
+    if (err) {
+      console.error("Erreur lors de la récupération des utilisateurs:", err);
+      return res.status(500).json({ success: false });
+    }
+    res.json({ success: true, users: results });
+  });
+});
+//app.post("/send-sms", (req, res) => {
+ // const {
+   // numbers,
+   // offreTitle
+  //} = req.body;
+
+ // if (!Array.isArray(numbers) || numbers.length === 0) {
+   // return res.status(400).json({ success: false, message: "Aucun numéro sélectionné." });
+ // }
+
+  //const validNumbers = numbers
+   // .map(num => {
+     // let trimmed = num.trim();
+     // if (!trimmed.startsWith('+')) {
+       // trimmed = '+216' + trimmed;
+      //}
+      //return trimmed;
+    //})
+   // .filter(num => /^\+216\d{8}$/.test(num));
+
+  //if (validNumbers.length === 0) {
+    //return res.status(400).json({ success: false, message: "Numéros invalides." });
+  //}
+
+  //console.log("Numéros valides:", validNumbers);
+  //console.log("Titre brut de l'offre :", offreTitle);
+
+  //const parts = offreTitle.split(',').map(p => p.trim());
+
+  //const offreTitleExtracted = parts[0] || '';
+  //const offreDomaineExtracted = parts[1] || '';
+  //const offreTypeExtracted = parts[2] || '';
+
+  //let offreLocationExtracted = '';
+  //let offreStartDateExtracted = '';
+  //let offreEndDateExtracted = '';
+
+  //if (parts.length >= 4) {
+   // const fourthPart = parts[3]; // e.g. "Tunis 2026-02-01T23:00:00.000Z"
+    //const fourthSplit = fourthPart.split(' ');
+    //if (fourthSplit.length >= 2) {
+     // offreStartDateExtracted = new Date(fourthSplit.pop()).toLocaleDateString('fr-FR');
+     // offreLocationExtracted = fourthSplit.join(' ');
+   // } else {
+     // offreLocationExtracted = fourthPart;
+    //}
+ // }
+
+ // if (parts.length >= 5) {
+   // offreEndDateExtracted = new Date(parts[4]).toLocaleDateString('fr-FR');
+  //}
+  //const smsBody = 
+    //`📢 Nouvelle offre publiée :\n` +
+    //`🧑‍💻 Titre: ${offreTitleExtracted}\n` +
+    //`📚 Domaine: ${offreDomaineExtracted}\n` +
+    //`📝 Type: ${offreTypeExtracted}\n` +
+   // `📍 Lieu: ${offreLocationExtracted}\n` +
+   // `📅 Début: ${offreStartDateExtracted}\n` +
+   // `📆 Fin: ${offreEndDateExtracted}`;
+
+  //console.log("Contenu du SMS :", smsBody);
+
+  //const sendPromises = validNumbers.map(num =>
+   // twilioClient.messages.create({
+    //  body: smsBody,
+     // from: process.env.TWILIO_PHONE_NUMBER,
+     // to: num
+   // })
+ // );
+
+ // Promise.all(sendPromises)
+    //.then(() => {
+      //return res.status(200).json({ success: true, message: "📨 SMS envoyés avec succès." });
+    //})
+    //.catch(error => {
+      //console.error("Erreur lors de l'envoi des SMS:", error);
+     // return res.status(500).json({ success: false, message: "❌ Erreur interne du serveur." });
+   // });
+//});
+
+
+
+// Browse Jobs functionality
+app.get("/jobs", async (req, res) => {
+  try {
+    const jobs = await scrapeTanitJobs();
+    res.json(jobs);
+  } catch (error) {
+    console.error("Error scraping jobs:", error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Get job details
+app.get("/jobs/:id", async (req, res) => {
+  try {
+    const jobId = req.params.id;
+    const jobs = await scrapeTanitJobs();
+    const job = jobs.find(j => j.id === jobId);
+    
+    if (!job) {
+      return res.status(404).json({ error: "Job not found" });
+    }
+    
+    res.json(job);
+  } catch (error) {
+    console.error("Error fetching job details:", error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Search jobs
+app.get("/jobs/search", async (req, res) => {
+  try {
+    const { query, location, type } = req.query;
+    const jobs = await scrapeTanitJobs();
+    
+    let filteredJobs = jobs;
+    
+    if (query) {
+      filteredJobs = filteredJobs.filter(job => 
+        job.title.toLowerCase().includes(query.toLowerCase()) ||
+        job.description.toLowerCase().includes(query.toLowerCase())
+      );
+    }
+    
+    if (location) {
+      filteredJobs = filteredJobs.filter(job =>
+        job.location.toLowerCase().includes(location.toLowerCase())
+      );
+    }
+    
+    if (type) {
+      filteredJobs = filteredJobs.filter(job =>
+        job.type.toLowerCase().includes(type.toLowerCase())
+      );
+    }
+    
+    res.json(filteredJobs);
+  } catch (error) {
+    console.error("Error searching jobs:", error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Get job categories
+app.get("/jobs/categories", async (req, res) => {
+  try {
+    const jobs = await scrapeTanitJobs();
+    const categories = [...new Set(jobs.map(job => job.category))];
+    res.json(categories);
+  } catch (error) {
+    console.error("Error fetching categories:", error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Get jobs by category
+app.get("/jobs/category/:category", async (req, res) => {
+  try {
+    const category = req.params.category;
+    const jobs = await scrapeTanitJobs();
+    const filteredJobs = jobs.filter(job => job.category === category);
+    res.json(filteredJobs);
+  } catch (error) {
+    console.error("Error fetching jobs by category:", error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.get("/users-for-sms", (req, res) => {
+  db.query("SELECT id, nom, numero_telephone,email FROM utilisateur", (err, results) => {
+    if (err) {
+      console.error("Erreur lors de la récupération des utilisateurs:", err);
+      return res.status(500).json({ success: false });
+    }
+    res.json({ success: true, users: results });
+  });
+});
+app.post("/send-sms", (req, res) => {
+  const { numbers, offreTitle, email } = req.body; // 👈 email ajouté
+
+  console.log("hi",req.body)
+
+  if (!Array.isArray(numbers) || numbers.length === 0) {
+    return res.status(400).json({ success: false, message: "Aucun numéro sélectionné." });
+  }
+
+  const validNumbers = numbers
+    .map(num => {
+      let trimmed = num.phone. trim();
+      if (!trimmed.startsWith('+')) {
+        trimmed = '+216' + trimmed;
+      }
+      return trimmed;
+    })
+    .filter(num => /^\+216\d{8}$/.test(num));
+
+  if (validNumbers.length === 0) {
+    return res.status(400).json({ success: false, message: "Numéros invalides." });
+  }
+
+  console.log("Numéros valides:", validNumbers);
+  console.log("Titre brut de l'offre :", offreTitle);
+
+  const parts = offreTitle.split(',').map(p => p.trim());
+
+  const offreTitleExtracted = parts[0] || '';
+  const offreDomaineExtracted = parts[1] || '';
+  const offreTypeExtracted = parts[2] || '';
+
+  let offreLocationExtracted = '';
+  let offreStartDateExtracted = '';
+  let offreEndDateExtracted = '';
+
+  if (parts.length >= 4) {
+    const fourthPart = parts[3]; // e.g. "Tunis 2026-02-01T23:00:00.000Z"
+    const fourthSplit = fourthPart.split(' ');
+    if (fourthSplit.length >= 2) {
+      offreStartDateExtracted = new Date(fourthSplit.pop()).toLocaleDateString('fr-FR');
+      offreLocationExtracted = fourthSplit.join(' ');
+    } else {
+      offreLocationExtracted = fourthPart;
+    }
+  }
+
+  if (parts.length >= 5) {
+    offreEndDateExtracted = new Date(parts[4]).toLocaleDateString('fr-FR');
+  }
+
+
+  const mailOptions = {
+    from: "vipjob-project@itqanlabs.com",
+    to: numbers[0].email, // Send to the email of the first number
+    subject: "📢 Nouvelle offre publiée sur VipJob",
+    text: `Bonjour,\n\nUne nouvelle offre vient d'être publiée :\n\n
+           🧑‍💻 Titre: ${offreTitleExtracted}\n
+           📚 Domaine: ${offreDomaineExtracted}\n
+           📝 Type: ${offreTypeExtracted}\n
+           📍 Lieu: ${offreLocationExtracted}\n
+           📅 Début: ${offreStartDateExtracted}\n
+           📆 Fin: ${offreEndDateExtracted}\n\n
+           Cordialement,\nL'équipe VipJob.tn`
+  };
+  
+  // Envoie de l'e-mail
+  transporter.sendMail(mailOptions, (err, info) => {
+    if (err) {
+      console.error("Erreur lors de l'envoi de l'e-mail:", err);
+      // Ne bloque pas la réponse si SMS ok, mais log l'erreur
+    } else {
+      console.log("E-mail envoyé avec succès :", info.response);
+    }
+  });
+  
+  // SMS Content
+  const smsBody = `📢 Nouvelle offre publiée :\n
+                   🧑‍💻 Titre: ${offreTitleExtracted}\n
+                   📚 Domaine: ${offreDomaineExtracted}\n
+                   📝 Type: ${offreTypeExtracted}\n
+                   📍 Lieu: ${offreLocationExtracted}\n
+                   📅 Début: ${offreStartDateExtracted}\n
+                   📆 Fin: ${offreEndDateExtracted}`;
+  
+  console.log("Contenu du SMS :", smsBody);
+  
+  const sendPromises = validNumbers.map(num =>
+    twilioClient.messages.create({
+      body: smsBody,
+      from: process.env.TWILIO_PHONE_NUMBER,
+      to: num
+    })
+  );
+
+  Promise.all(sendPromises)
+    .then(() => {
+      return res.status(200).json({ success: true, message: "📨 SMS envoyés avec succès." });
+    })
+    .catch(error => {
+      console.error("Erreur lors de l'envoi des SMS:", error);
+      return res.status(500).json({ success: false, message: "❌ Erreur interne du serveur." });
+    });
+});
+
+// postuler 
+app.post("/postuler", (req, res) => {
+  const { utilisateur_id, offre_id } = req.body;
+
+  if (!utilisateur_id || !offre_id) {
+    return res.status(400).json({
+      success: false,
+      message: "utilisateur_id et offre_id sont requis."
+    });
+  }
+
+  // Vérifier si l'utilisateur a déjà postulé
+  const checkQuery = "SELECT * FROM candidatures WHERE utilisateur_id = ? AND offre_id = ?";
+  db.query(checkQuery, [utilisateur_id, offre_id], (err, results) => {
+    if (err) {
+      console.error("Erreur lors de la vérification:", err);
+      return res.status(500).json({ success: false, message: "Erreur serveur" });
+    }
+
+    if (results.length > 0) {
+      return res.status(409).json({ success: false, message: "Vous avez déjà postulé à cette offre." });
+    }
+
+    // Si non, insérer la candidature
+    const insertQuery = "INSERT INTO candidatures (utilisateur_id, offre_id) VALUES (?, ?)";
+    db.query(insertQuery, [utilisateur_id, offre_id], (err, result) => {
+      if (err) {
+        console.error("Erreur lors de l'insertion:", err);
+        return res.status(500).json({ success: false, message: "Erreur lors de la postulation." });
+      }
+
+      res.status(201).json({
+        success: true,
+        message: "Postulation enregistrée avec succès.",
+        candidatureId: result.insertId
+      });
+    });
+  });
+});
+
+// Favorites endpoints
+app.post('/favorites', (req, res) => {
+  const { user_id, offre_id } = req.body;
+
+  if (!user_id || !offre_id) {
+    return res.status(400).json({ success: false, message: "User ID and offer ID are required" });
+  }
+
+  const sql = `INSERT INTO favorite_offres (user_id, offre_id) VALUES (?, ?)`;
+  
+  db.query(sql, [user_id, offre_id], (err, result) => {
+    if (err) {
+      console.error("Error adding favorite:", err);
+      return res.status(500).json({ success: false, message: "Error adding favorite" });
+    }
+    res.status(200).json({ success: true, message: "Favorite added successfully" });
+  });
+});
+
+app.delete('/favorites', (req, res) => {
+  const { user_id, offre_id } = req.body;
+
+  if (!user_id || !offre_id) {
+    return res.status(400).json({ success: false, message: "User ID and offer ID are required" });
+  }
+
+  const sql = `DELETE FROM favorite_offres WHERE user_id = ? AND offre_id = ?`;
+  
+  db.query(sql, [user_id, offre_id], (err, result) => {
+    if (err) {
+      console.error("Error removing favorite:", err);
+      return res.status(500).json({ success: false, message: "Error removing favorite" });
+    }
+    res.status(200).json({ success: true, message: "Favorite removed successfully" });
+  });
+});
+
+app.get('/favorites/:userId', (req, res) => {
+  const userId = req.params.userId;
+
+  const sql = `
+    SELECT o.* 
+    FROM offreemploi o
+    INNER JOIN favorite_offres f ON o.id = f.offre_id
+    WHERE f.user_id = ?
+  `;
+
+  db.query(sql, [userId], (err, results) => {
+    if (err) {
+      console.error("Error fetching favorites:", err);
+      return res.status(500).json({ success: false, message: "Error fetching favorites" });
+    }
+    res.status(200).json(results);
+  });
+});
+
+//contact
+
+app.post('/submit-contact', async (req, res) => {
+  const { name, email, subject, message } = req.body;
+
+  let transporter = nodemailer.createTransport({
+    host: 'smtp.itqanlabs.com',
+    port: 587,
+    secure: false,
+    auth: {
+      user: 'vipjob-project@itqanlabs.com',
+      pass: 'JNLFWgG0A9QYNq2'
+    },
+    tls: {
+      rejectUnauthorized: false
+    }
+  });
+
+  const mailOptions = {
+    from: `"${name}" <${email}>`,
+    to: 'jmalminyar020@gmail.com',
+    subject: subject,
+    text: `Nom: ${name}\nEmail: ${email}\n\nMessage:\n${message}`
+  };
+
+  try {
+    await transporter.sendMail(mailOptions);
+    res.redirect('/contact?status=success');
+  } catch (error) {
+    console.error('Erreur email :', error);
+    res.redirect('/contact?status=error');
+  }
+});
+
+// Stockage avec nom unique
+const storage = multer.diskStorage({
+  filename: (req, file, cb) => {
+    cb(null, req.user.id + '-' + Date.now() + '.jpg');
+  }
+});
+
+// Route de récupération
+app.get('/my-profile', (req, res) => {
+  const user = db.users.find(u => u.id === req.user.id);
+  res.json({ photoUrl: user.profilePhoto });
 });
 
 

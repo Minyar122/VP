@@ -1,0 +1,32 @@
+<nav class="bg-white p-4 shadow-md">
+    <div class="container mx-auto flex items-center justify-between">
+        <!-- Logo/Name with darker text -->
+<div class="container mx-auto flex justify-between items-center px-4">
+      <a href="/" class="flex items-center gap-2 text-xl font-medium animate-fade-in"
+        @click="mobileMenuOpen = false">
+<div class="flex items-center space-x-2">
+<img src="assets/img/job.png" alt="Logo" class="h-12 w-12 object-cover align-middle">
+  <span class="text-2xl font-bold tracking-tight">VIPJOB.TN</span>
+</div> 
+        <!-- Navbar Links -->
+        <ul class="flex space-x-6 items-center">
+            <li><a href="/" class="text-black hover:text-gray-800 items-center">
+                <i class="fas fa-home mr-2"></i> Accueil
+            </a></li>
+
+            <li><a href="/contact" class="text-black hover:text-gray-800  items-center">Contact</a></li>
+
+            <!-- Buttons for login and register -->
+            <li>
+                <a href="/login" class="bg-gray-800 text-white py-2 px-4 rounded hover:bg-gray-900">
+                    Se connecter
+                </a>
+            </li>
+            <li>
+                <a href="/signup" class="border-2 border-black text-black py-2 px-4 rounded hover:bg-gray-100">
+                    S'inscrire
+                </a>
+            </li>
+        </ul>
+    </div>
+</nav>

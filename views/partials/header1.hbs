@@ -1,0 +1,100 @@
+
+    <script>
+        function handleLogout(event) {
+            event.preventDefault(); // Prevent default link behavior
+
+            // Clear localStorage and sessionStorage
+            localStorage.clear();
+            sessionStorage.clear();
+
+            // Redirect the user to the login page
+            window.location.href = "/login";
+        }
+
+        document.addEventListener("DOMContentLoaded", function () {
+            // Toggle Profile Dropdown
+            document.getElementById("profileButton").addEventListener("click", function () {
+                const menu = document.getElementById("menu");
+                menu.classList.toggle("hidden");
+            });
+        });
+    </script>
+    <style>
+        .hover-lift {
+            transition: transform 0.2s ease-in-out;
+        }
+        .hover-lift:hover {
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+  
+<header
+    x-data="{ scrolled: false, mobileMenuOpen: false }"
+    x-init="window.addEventListener('scroll', () => { scrolled = window.scrollY > 10 })"
+    :class="scrolled ? 'glass-card py-2' : 'bg-transparent py-4'"
+    class="fixed top-0 left-0 w-full z-50 transition-all duration-300 bb"
+>
+    <div class="container mx-auto flex justify-between items-center px-4">
+        <!-- Logo -->
+        <a href="/" class="flex items-center gap-2 text-xl font-medium animate-fade-in" @click="mobileMenuOpen = false">
+            <div class="flex items-center space-x-2">
+                <img src="assets/img/job.png" alt="Logo" class="h-12 w-12 object-cover align-middle">
+                <span class="text-3xl font-bold tracking-wide">VIPJOB.TN</span>
+            </div> 
+        </a>
+
+        <!-- Desktop Menu -->
+        <nav class="hidden md:flex items-center gap-8 animate-fade-in">
+            <a href="/offre" class="flex text-gray items-center py-2 transition-all duration-300 hover-lift text-primary/70 hover:text-primary">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect width="20" height="14" x="2" y="7" rx="2" ry="2"/>
+                    <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
+                </svg>
+                Offres de travail
+            </a>
+            <a href="/jobs"  class="flex text-gray items-center py-2 transition-all duration-300 hover-lift text-primary/70 hover:text-primary">
+              <i class="fas fa-search mr-1"></i> Parcourir les emplois </a>
+            <a href="#" class="flex text-gray items-center py-2 transition-all duration-300 hover-lift text-primary/70 hover:text-primary">
+               <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                 <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+                </svg>
+                   Favoris
+            </a>
+
+            <!-- Notification Icon -->
+            <button class="relative p-1 text-gray rounded-full hover:bg-secondary transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/>
+                    <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/>
+                </svg>
+                <span class="absolute top-0 right-0 h-2 w-2 rounded-full bg-red-500"></span>
+            </button>
+
+            <!-- Profile Avatar -->
+            <div class="relative">
+                <button id="profileButton" class="h-9 w-9 rounded-full overflow-hidden hover:ring-2 hover:ring-gray-300 transition">
+                    <img id="profile-btn-img" src="https://images.unsplash.com/photo-1581091226825-a6a2a5aee158" alt="Photo de profil" class="h-full w-full object-cover" />
+                </button>
+
+                <!-- Profile Dropdown Menu -->
+                <div id="menu" class="hidden absolute right-0 mt-2 w-40 bg-white rounded-lg shadow-lg overflow-hidden border border-gray-200">
+                    <a href="/profile" class="flex items-center py-2 transition-all duration-300 hover-lift text-primary/70 hover:text-primary">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zM12 14c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                        </svg>
+                        Profile
+                    </a>
+                    <a href="/login" onclick="handleLogout(event)" class="flex items-center py-2 transition-all duration-300 hover-lift text-red-600 hover:text-red-800">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect width="20" height="14" x="2" y="5" rx="2" ry="2"/>
+                            <line x1="2" x2="22" y1="10" y2="10"/>
+                        </svg> 
+                        Déconnexion
+                    </a>    
+                </div>   
+            </div>
+        </nav>
+    </div>
+</header>

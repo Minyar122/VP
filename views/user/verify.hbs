@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <title>Vérification - VipJob.tn</title>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+</head>
+<body class="min-h-screen flex flex-col bg-gradient-to-b from-blue-50 to-white relative">
+    <!-- Éléments d'arrière-plan -->
+    <div class="fixed inset-0 overflow-hidden pointer-events-none z-[-1]">
+        <div class="animate-pulse-slow absolute top-20 -left-32 w-96 h-96 bg-gray-400 rounded-full mix-blend-multiply filter blur-3xl opacity-20"></div>
+        <div class="animate-pulse-slow animation-delay-2000 absolute bottom-20 -right-32 w-96 h-96 bg-gray-400 rounded-full mix-blend-multiply filter blur-3xl opacity-30"></div>
+    </div>
+
+    <!-- Formulaire de vérification -->
+    <div class="min-h-screen flex items-center justify-center">
+        <div class="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
+            <h2 class="text-2xl font-bold mb-6 text-center">Vérification du compte</h2>
+            <form id="verifyForm" class="space-y-4">
+                <!-- Email -->
+                <div>
+                    <label for="email" class="block text-gray-700 font-bold mb-2">Email</label>
+                    <input type="email" id="email" name="email" required class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring focus:border-blue-300">
+                </div>
+                <!-- Code de confirmation -->
+                <div>
+                    <label for="code" class="block text-gray-700 font-bold mb-2">Code de confirmation</label>
+                    <input type="text" id="code" name="code" required class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring focus:border-blue-300">
+                </div>
+                <!-- Bouton de vérification -->
+                <button type="submit" class="w-full bg-gray-700 text-white font-bold py-2 px-4 rounded-lg hover:bg-gray-800 focus:outline-none focus:ring">
+                    Vérifier
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Intercepter la soumission du formulaire
+        document.getElementById("verifyForm").addEventListener("submit", async (e) => {
+            e.preventDefault(); // Empêcher la soumission par défaut
+
+            const email = document.getElementById("email").value;
+            const code = document.getElementById("code").value;
+
+            // Validation côté client
+            if (!email || !code) {
+                Swal.fire({
+                    icon: "error",
+                    title: "Erreur",
+                    text: "Veuillez remplir tous les champs.",
+                    confirmButtonText: "OK",
+                    confirmButtonColor: 'gray',
+
+                });
+                return;
+            }
+
+            try {
+                const response = await fetch("/verify", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({ email, code }),
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    Swal.fire({
+                        icon: "success",
+                        title: result.message,
+                        confirmButtonText: "OK",
+                    }).then(() => {
+                        window.location.href = "/login";
+                    });
+                } else {
+                    Swal.fire({
+                        icon: "error",
+                        title: result.message || "Erreur lors de la vérification.",
+                        confirmButtonText: "OK",
+                    });
+                }
+            } catch (error) {
+                console.error("Erreur:", error);
+                Swal.fire({
+                    icon: "error",
+                    title: "Une erreur est survenue lors de la vérification.",
+                    confirmButtonText: "OK",
+                });
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VipJob.tn - Trouvez votre emploi idéal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+     <script src="https://unpkg.com/lucide@latest"></script>
+  
+
+</head>
+
+<body class="min-h-screen flex flex-col bg-white relative overflow-hidden">
+  <!-- Fond géométrique stylisé -->
+  <div class="absolute -top-32 -left-32 w-[500px] h-[500px] bg-blue-200  rotate-45 rounded-3xl opacity-60 z-[-1]"></div>
+  <div class="absolute top-0 right-[-100px] w-[600px] h-[600px] bg-blue-200  rotate-[30deg] rounded-3xl opacity-70 z-[-1]"></div>
+  
+  {{> navbar }}
+    <!-- Hero Section -->
+    <section class="relative pt-18 pb-18 min-h-[85vh] flex items-center">
+        <div class="container mx-auto px-4 animate-fade-in">
+            <div class="flex flex-col md:flex-row items-center gap-12 md:gap-16">
+                <div class="w-full md:w-1/2 animate-slide-up">
+                    <div class="inline-block px-3 py-1 mb-4 rounded-full bg-blue-100 text-sm font-medium text-gray-900">
+                        Trouvez votre emploi idéal
+                    </div>
+                    <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight">
+                        Votre carrière, 
+                        <span class="relative">
+                            simplifiée
+                            <span class="absolute bottom-1 left-0 w-full h-3 bg-blue-900 -z-10"></span>
+                        </span>
+                    </h1>
+                    <p class="text-lg text-gray-600 mb-8 max-w-md">
+                        Recevez des offres d'emploi personnalisées directement par SMS, selon vos compétences et préférences.
+                    </p>
+                    
+                    <div class="flex flex-col sm:flex-row gap-4">
+                        <a href="#" class="px-6 py-3 bg-gray-700 text-white rounded-lg hover:bg-gray-800 transition-colors inline-flex items-center justify-center hover-lift">
+                            Créer mon profil
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-2" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd" />
+                            </svg>
+                        </a>
+                        <a href="/jobs" class="px-6 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-center hover-lift">
+                            Explorer les offres
+                        </a>
+                    </div>
+                    
+                    <div class="mt-12 flex items-center gap-8">
+                        <div class="hover-lift">
+                            <span class="text-3xl font-bold">2,000+</span>
+                            <span class="text-gray-600 text-sm block">Offres d'emploi</span>
+                        </div>
+                        <div class="hover-lift">
+                            <span class="text-3xl font-bold">500+</span>
+                            <span class="text-gray-600 text-sm block">Entreprises</span>
+                        </div>
+                        <div class="hover-lift">
+                            <span class="text-3xl font-bold">10k+</span>
+                            <span class="text-gray-600 text-sm block">Utilisateurs</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="w-full md:w-1/2 animate-slide-down">
+    <div class="relative">
+        <div class="glass-card rounded-xl overflow-hidden shadow-lg relative z-10 group">
+            <!-- Conteneur d'image avec fond de secours -->
+            <div class="relative w-full aspect-[4/3] bg-gray-100">
+                <!-- Image principale -->
+                <img 
+                    src="https://images.unsplash.com/photo-1552664730-d307ca884978" 
+                    alt="Entretien d'embauche"
+                    class="absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 animate-fade-in-out" 
+                    id="mainJobImage"
+                />
+                <!-- Image secondaire préchargée -->
+                <img 
+                    src="https://img.freepik.com/photos-premium/concept-reseautage-ressources-humaines-personnes_31965-4439.jpg" 
+                    alt="Réseautage professionnel"
+                    class="absolute inset-0 w-full h-full object-cover opacity-0"
+                    id="secondaryJobImage"
+                />
+            </div>
+        </div>
+        <!-- Notification SMS animée -->
+        <div class="absolute top-8 -right-4 z-20 glass-card rounded-lg p-4 animate-float">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-full bg-gray-900 flex items-center justify-center text-white animate-pulse">
+                    <i class="fas fa-sms text-lg"></i>
+                </div>
+                <div>
+                    <div class="text-sm font-medium">Alerte Emploi</div>
+                    <div class="text-xs text-gray-500">Développeur Web - Tunis</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    const jobImages = [
+        'https://images.unsplash.com/photo-1552664730-d307ca884978',
+        'https://img.freepik.com/photos-premium/concept-reseautage-ressources-humaines-personnes_31965-4439.jpg',
+    ];
+
+    // Préchargement des images
+    jobImages.forEach(img => {
+        new Image().src = img;
+    });
+
+    let currentImageIndex = 0;
+    const mainImage = document.getElementById('mainJobImage');
+    const secondaryImage = document.getElementById('secondaryJobImage');
+
+    function switchImages() {
+        // Transition croisée
+        mainImage.style.opacity = 0;
+        secondaryImage.style.opacity = 1;
+        
+        setTimeout(() => {
+            // Échange des positions après la transition
+            [mainImage.src, secondaryImage.src] = [secondaryImage.src, mainImage.src];
+            mainImage.style.opacity = 1;
+            secondaryImage.style.opacity = 0;
+        }, 1000);
+    }
+
+    // Changement toutes les 6 secondes
+    setInterval(switchImages, 6000);
+</script>              
+            </div>
+        </div>
+    </section>
+    
+    
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+  <h1 class="text-3xl font-bold mb-10 text-center">Comment utiliser la plateforme ?</h1>
+  <div id="features-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+</div>
+<style>
+  @keyframes wave {
+    0% { mask-position-y: 0; }
+    100% { mask-position-y: 60px; }
+  }
+
+  .wave-strip {
+    -webkit-mask-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 60" width="24" height="60"><path fill="black" d="M0 0 Q 4 50 8 0 Q 12 30 16 0 Q 20 15 24 0 V 60 H 0 Z"/></svg>');
+    mask-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 60" width="24" height="60"><path fill="black" d="M0 0 Q 4 50 8 0 Q 12 30 16 0 Q 20 15 24 0 V 60 H 0 Z"/></svg>');
+    mask-repeat: repeat-y;
+    mask-size: 24px 60px;
+    animation: wave 2s linear infinite;
+  }
+</style>
+<script>
+  const features = [
+    {
+      icon: 'user',
+      color: 'text-blue-600',
+      title: 'Inscription',
+      description: 'Créez votre compte facilement pour accéder à toutes les fonctionnalités de la plateforme.',
+      link: '/profile'
+    },
+    {
+      icon: 'user-check',
+      color: 'text-green-600',
+      title: 'Modification de profil',
+      description: 'Personnalisez votre profil avec vos compétences et expériences pour recevoir des offres adaptées.',
+      link: '/profile'
+    },
+    {
+      icon: 'file-text',
+      color: 'text-purple-600',
+      title: 'Création de CV',
+      description: 'Créez et personnalisez votre CV en ligne pour postuler facilement aux offres d\'emploi.',
+      link: '/profile'
+    },
+    
+    {
+      icon: 'bell-ring',
+      color: 'text-red-600',
+      title: 'Alertes SMS',
+      description: 'Recevez des notifications instantanées par SMS dès qu\'une offre correspond à votre profil.',
+      link: '/profile'
+    },
+    {
+      icon: 'filter',
+      color: 'text-indigo-600',
+      title: 'Filtrage des offres',
+      description: 'Utilisez nos filtres avancés pour trouver rapidement les offres qui vous correspondent.',
+      link: '/jobs'
+    }
+  ];
+
+  const featuresContainer = document.getElementById('features-container');
+
+  features.forEach(feature => {
+    const card = document.createElement('div');
+    card.className =
+      'relative bg-white rounded-xl shadow-md border border-gray-200 overflow-hidden hover:shadow-lg transition-all duration-300';
+
+    card.innerHTML = `
+      <div class="p-6">
+        <i data-lucide="${feature.icon}" class="${feature.color} w-8 h-8 mb-4"></i>
+        <h2 class="text-lg font-bold text-gray-800 mb-2">${feature.title}</h2>
+        <p class="text-sm text-gray-600 mb-4">${feature.description}</p>
+        <a href="${feature.link}" class="text-sm font-semibold text-blue-600 hover:underline flex items-center gap-1">
+          En savoir plus <span aria-hidden="true">→</span>
+        </a>
+      </div>
+<div class="wave-strip absolute top-0 right-0 h-full w-[16px] bg-gradient-to-b from-blue-200 to-blue-100"></div>    `;
+
+    featuresContainer.appendChild(card);
+  });
+
+  lucide.createIcons();
+</script>
+
+
+<!-- ✅ Import de la bibliothèque Lucide -->
+<script src="https://unpkg.com/lucide@latest"></script>
+
+<!-- Section des Notifications SMS -->
+<section class="py-18 px-8 sm:px-16 md:px-24"> 
+  <div class="container mx-auto"> 
+    <div class="glass-card rounded-2xl p-8 md:p-12 flex flex-col md:flex-row items-center gap-8 md:gap-12 animate-slide-up"> 
+      <div class="w-full md:w-2/5">
+        <img src="https://images.unsplash.com/photo-1498050108023-c5249f4df085" alt="Recevez des offres par SMS" class="rounded-xl w-full h-auto aspect-video object-cover"/>
+      </div> 
+      <div class="w-full md:w-3/5"> 
+        <div class="inline-block px-3 py-1 mb-4 rounded-full bg-blue-100 text-sm font-medium text-gray-800"> 
+          Notifications SMS 
+        </div> 
+        <h2 class="text-2xl md:text-3xl font-bold mb-4"> 
+          Ne manquez plus aucune opportunité 
+        </h2> 
+        <p class="text-gray-600 mb-8"> 
+          Recevez des alertes personnalisées directement sur votre téléphone dès qu'une offre correspond à votre profil. Notre système intelligent filtre les offres en fonction de vos compétences, de votre expérience et de vos préférences. 
+        </p>
+        <div class="flex flex-col sm:flex-row gap-3"> 
+          <a href="#" class="px-6 py-3 bg-white shadow-md border border-gray-100 hover:shadow-lg rounded-lg transition-all duration-300 hover-lift"> 
+            Voir les plans 
+          </a> 
+          <a href="#" class="text-gray-600 hover:text-blue-600 transition-colors px-4 py-3 inline-flex items-center"> 
+            En savoir plus 
+            <svg class="ml-2 w-4 h-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"> 
+              <path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd"/> 
+            </svg> 
+          </a> 
+        </div> 
+      </div> 
+    </div> 
+  </div> 
+</section>
+
+<!-- Témoignages -->
+<section class="py-20 px-4">
+  <div class="container mx-auto">
+    <div class="text-center mb-12">
+      <div class="inline-block mb-4 px-3 py-1 bg-blue-100 text-blue-700 text-sm font-medium rounded-full">
+        Témoignages
+      </div>
+      <h2 class="text-3xl md:text-4xl font-bold mb-4">
+        Ce que disent nos utilisateurs
+      </h2>
+      <p class="text-gray-600 max-w-2xl mx-auto">
+        Découvrez les expériences de ceux qui ont trouvé leur emploi idéal grâce à notre service d'alertes SMS.
+      </p>
+    </div>
+
+    <!-- Conteneur des témoignages -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6" id="testimonial-container">
+      <!-- JavaScript injecte ici -->
+    </div>
+  </div>
+</section>
+
+<!-- Script d'injection des témoignages -->
+<script>
+  const testimonials = [
+    {
+      name: 'Nadia Ben Romdhane',
+      position: 'Développeuse Front-End',
+      company: 'TechnoPlus',
+      rating: 5,
+      testimonial: 'Grâce aux alertes SMS, j’ai trouvé un emploi en moins d’une semaine !',
+      photo: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&h=200&w=200'
+    },
+    {
+      name: 'Khalil Mezghani',
+      position: 'Analyste Data',
+      company: 'DataSense',
+      rating: 4,
+      testimonial: 'La plateforme est intuitive et les offres sont parfaitement ciblées.',
+      photo: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&h=200&w=200'
+    },
+    {
+      name: 'Rania Sassi',
+      position: 'Chef de projet',
+      company: 'InnovaIT',
+      rating: 5,
+      testimonial: 'Un excellent service. Les notifications sont rapides et pertinentes.',
+            photo: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?crop=entropy&cs=tinysrgb&fit=crop&fm=jpg&h=200&w=200'
+  
+        }
+  ];
+
+  const testimonialContainer = document.getElementById('testimonial-container');
+
+  testimonials.forEach((t) => {
+    const card = document.createElement('div');
+    card.className = 'relative bg-white rounded-xl shadow-md border border-gray-200 overflow-hidden hover:shadow-lg transition-all duration-300';
+
+    const stars = Array(t.rating).fill('<i class="fas fa-star text-yellow-400"></i>').join('');
+    const emptyStars = Array(5 - t.rating).fill('<i class="fas fa-star text-gray-300"></i>').join('');
+
+    card.innerHTML = `
+      <div class="p-6">
+        <div class="flex items-center gap-1 mb-4">
+          ${stars}${emptyStars}
+        </div>
+        <p class="text-gray-600 mb-6">"${t.testimonial}"</p>
+        <div class="flex items-center gap-3">
+          <img src="${t.photo}" alt="${t.name}" class="w-12 h-12 rounded-full object-cover" />
+          <div>
+            <p class="font-semibold text-gray-800">${t.name}</p>
+            <p class="text-sm text-gray-500">${t.position}, ${t.company}</p>
+          </div>
+        </div>
+      </div>
+      <div class="wave-strip absolute top-0 right-0 h-full w-[24px] bg-gradient-to-b from-blue-200 to-blue-100"></div>
+    `;
+
+    testimonialContainer.appendChild(card);
+  });
+</script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js" defer></script>
+
+<!-- Footer -->
+{{>footer}} 
+
+</body>
+</html>

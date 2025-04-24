@@ -1,4 +1,3 @@
-// ______________________________________________email : chedi@yanyi.de
 
 
 var userDescription = "banjour je swis un hom"

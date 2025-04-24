@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/flowbite@1.6.3/dist/flowbite.min.css" rel="stylesheet" />
+</head>
+
+<body class="bg-gray-100">
+
+    <div class="flex h-screen overflow-hidden">
+        {{> sidebar }} <!-- Inclusion du sidebar -->
+
+        <div class="flex-1 flex flex-col bg-gray-50">
+            {{> header }} <!-- Inclusion du header -->
+
+            <!-- Main content -->
+            <div class="flex-1 p-6">
+                <!-- Dashboard Header -->
+                <header class="mb-6">
+                    <h1 class="text-3xl font-semibold">Dashboard</h1>
+                </header>
+
+                <!-- Charts Section -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- Line Chart -->
+                    <div class="bg-white p-6 rounded-lg shadow-md flex flex-col">
+                        <h2 class="font-semibold text-lg mb-4">Sales Overview</h2>
+                        <canvas id="salesChart"></canvas>
+                    </div>
+
+                    <!-- Bar Chart -->
+                    <div class="bg-white p-6 rounded-lg shadow-md flex flex-col">
+                        <h2 class="font-semibold text-lg mb-4">Revenue by Region</h2>
+                        <canvas id="revenueChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Sales Overview Chart (Line Chart)
+        const salesCtx = document.getElementById('salesChart').getContext('2d');
+        const salesChart = new Chart(salesCtx, {
+            type: 'line',
+            data: {
+                labels: ['January', 'February', 'March', 'April', 'May', 'June'],
+                datasets: [{
+                    label: 'Sales',
+                    data: [120, 150, 180, 170, 200, 220],
+                    borderColor: '#4CAF50',
+                    fill: false,
+                    tension: 0.1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top'
+                    }
+                }
+            }
+        });
+
+        // Revenue by Region Chart (Bar Chart)
+        const revenueCtx = document.getElementById('revenueChart').getContext('2d');
+        const revenueChart = new Chart(revenueCtx, {
+            type: 'bar',
+            data: {
+                labels: ['North', 'South', 'East', 'West'],
+                datasets: [{
+                    label: 'Revenue',
+                    data: [5000, 8000, 6000, 7000],
+                    backgroundColor: '#3498db',
+                    borderColor: '#2980b9',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top'
+                    }
+                }
+            }
+        });
+    </script>
+
+</body>
+
+</html>
